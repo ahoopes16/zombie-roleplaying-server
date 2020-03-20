@@ -4,6 +4,10 @@ import * as bodyParser from 'koa-body'
 import errorHandler from './middleware/error-handler.middleware'
 import * as KoaLogger from 'koa-logger-winston'
 import logger from './util/logger.util'
+import DBConnector from './database'
+
+const dbConnector = new DBConnector()
+dbConnector.connect()
 
 const app = new Koa()
 const router = new Router()
