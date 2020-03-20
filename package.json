@@ -10,7 +10,13 @@
   "scripts": {
     "start": "nodemon --watch 'src/**/*' -e ts --exec ts-node ./src/server.ts",
     "lint": "eslint ./src/**/*.ts",
-    "lint-fix": "yarn lint --fix"
+    "lint-fix": "yarn lint --fix",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testTimeout": 1000
   },
   "dependencies": {
     "koa": "^2.11.0",
@@ -18,6 +24,7 @@
     "koa-router": "^8.0.8"
   },
   "devDependencies": {
+    "@types/jest": "^25.1.4",
     "@types/koa": "^2.11.2",
     "@types/koa-router": "^7.4.0",
     "@typescript-eslint/eslint-plugin": "^2.24.0",
@@ -25,8 +32,10 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^25.1.0",
     "nodemon": "^2.0.2",
     "prettier": "^1.19.1",
+    "ts-jest": "^25.2.1",
     "ts-node": "^8.7.0",
     "typescript": "^3.8.3"
   }
