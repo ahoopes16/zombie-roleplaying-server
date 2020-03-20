@@ -27,7 +27,9 @@
   "dependencies": {
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
-    "koa-router": "^8.0.8"
+    "koa-logger-winston": "^0.0.2",
+    "koa-router": "^8.0.8",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@types/jest": "^25.1.4",
