@@ -494,6 +494,15 @@
   dependencies:
     "@types/koa" "*"
 
+"@types/koa-logger-winston@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@types/koa-logger-winston/-/koa-logger-winston-0.0.2.tgz#17cbe7ec2c2e1703d64d6e679e597267e1420448"
+  integrity sha512-YCDsNSbSGpErDkZN1xHqetqdZnoVixo4VT/NEqlFIitOevvJDMcyIUexb5vIw9aQBVUYMPpRE6wUzhGe4LcfTw==
+  dependencies:
+    "@types/koa" "*"
+    "@types/node" "*"
+    winston "^3.0.0"
+
 "@types/koa-router@^7.4.0":
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/@types/koa-router/-/koa-router-7.4.0.tgz#4a5f48ca4432281f7429faedd9510c20945939dc"
@@ -5062,7 +5071,7 @@ winston-transport@^4.3.0:
     readable-stream "^2.3.6"
     triple-beam "^1.2.0"
 
-winston@^3.2.1:
+winston@^3.0.0, winston@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/winston/-/winston-3.2.1.tgz#63061377976c73584028be2490a1846055f77f07"
   integrity sha512-zU6vgnS9dAWCEKg/QYigd6cgMVVNwyTzKs81XZtTFuRwJOcDdBg7AU0mXVyNbs7O5RH2zdv+BdNZUlx7mXPuOw==
