@@ -8,7 +8,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "nodemon --watch 'src/**/*' -e ts --exec ts-node ./src/server.ts"
+    "start": "nodemon --watch 'src/**/*' -e ts --exec ts-node ./src/server.ts",
+    "lint": "eslint ./src/**/*.ts",
+    "lint-fix": "yarn lint --fix"
   },
   "dependencies": {
     "koa": "^2.11.0",
@@ -18,7 +20,13 @@
   "devDependencies": {
     "@types/koa": "^2.11.2",
     "@types/koa-router": "^7.4.0",
+    "@typescript-eslint/eslint-plugin": "^2.24.0",
+    "@typescript-eslint/parser": "^2.24.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
     "nodemon": "^2.0.2",
+    "prettier": "^1.19.1",
     "ts-node": "^8.7.0",
     "typescript": "^3.8.3"
   }

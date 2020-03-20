@@ -10,7 +10,7 @@ const port = 8000
 app.use(bodyParser())
 
 router.get('/*', async ctx => {
-   ctx.body = 'This will be the zombie roleplaying game API!'
+    ctx.body = 'This will be the zombie roleplaying game API!'
 })
 
 app.use(router.routes())
