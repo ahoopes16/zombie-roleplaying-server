@@ -8,4 +8,4 @@ A Koa server to host my zombie role-playing game!
 1. Enjoy!
 
 ## Dependencies
-1. MongoDB (eventually)
+1. MongoDB
