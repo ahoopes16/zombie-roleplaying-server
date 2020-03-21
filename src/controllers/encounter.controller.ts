@@ -1,10 +1,10 @@
 import * as Koa from 'koa'
 import { Model } from 'mongoose'
-import encounterModel, { Encounter } from '../models/encounter.model'
+import EncounterModel, { Encounter } from '../models/encounter.model'
 
-export default class EncounterController {
+export class EncounterController {
     private model: Model<Encounter>
-    constructor(model = encounterModel()) {
+    constructor(model = EncounterModel()) {
         this.model = model
     }
 
@@ -13,16 +13,17 @@ export default class EncounterController {
     }
 
     public createEncounter: Koa.Middleware = async ctx => {
-        const { body } = ctx.request
+        const encounter = ctx.request.body
 
-        ctx.assert(body.title && typeof body.title === 'string', 400, `An encounter requires a title of type string`)
-        ctx.assert(
-            body.description && typeof body.description === 'string',
-            400,
-            `An encounter requires a description of type string`,
-        )
+        const hasProperTitle = !!(encounter.title && typeof encounter.title === 'string')
+        ctx.assert(hasProperTitle, 400, 'An encounter requires a title property of type string.')
 
-        const encounter = await this.model.create(ctx.request.body)
-        ctx.body = { result: encounter }
+        const hasProperDescription = !!(encounter.description && typeof encounter.description === 'string')
+        ctx.assert(hasProperDescription, 400, 'An encounter requires a description property of type string.')
+
+        const encounterWithSameTitle = !!(await this.model.findOne({ title: encounter.title }).exec())
+        ctx.assert(!encounterWithSameTitle, 400, `An encounter with the title ${encounter.title} already exists.`)
+
+        ctx.body = { result: await this.model.create(encounter) }
     }
 }

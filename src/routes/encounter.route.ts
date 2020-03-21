@@ -1,5 +1,5 @@
 import * as Router from 'koa-router'
-import EncounterController from '../controllers/encounter.controller'
+import { EncounterController } from '../controllers/encounter.controller'
 const encounterController = new EncounterController()
 
 const router = new Router({ prefix: '/v1/encounters' })
