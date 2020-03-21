@@ -24,6 +24,7 @@ export class EncounterController {
         const encounterWithSameTitle = !!(await this.model.findOne({ title: encounter.title }).exec())
         ctx.assert(!encounterWithSameTitle, 400, `An encounter with the title ${encounter.title} already exists.`)
 
+        ctx.status = 201
         ctx.body = { result: await this.model.create(encounter) }
     }
 }

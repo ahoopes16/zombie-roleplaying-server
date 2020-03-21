@@ -64,12 +64,45 @@ describe('encounter controller', () => {
             const ctx = fakeKoaContext(newEncounterRequestBody)
 
             await controller.createEncounter(ctx, fakeKoaNext)
-            expect(ctx.body.result).toBeTruthy()
 
             const actual = await model.findById(ctx.body.result._id)
             expect(actual.title).toBe(newEncounterRequestBody.title)
             expect(actual.description).toBe(newEncounterRequestBody.description)
             expect(actual.actions.length).toBe(newEncounterRequestBody.actions.length)
+        })
+
+        test('returns a 201 when encounter is successfully created', async () => {
+            const model = EncounterModel()
+            const controller = new EncounterController(model)
+
+            const newEncounterRequestBody = {
+                title: `RandomTitle_${Math.random()}`,
+                description: `RandomDescription_${Math.random()}`,
+                actions: [`RandomAction_${Math.random()}`],
+            }
+            const ctx = fakeKoaContext(newEncounterRequestBody)
+
+            await controller.createEncounter(ctx, fakeKoaNext)
+            expect(ctx.status).toBe(201)
+        })
+
+        test('returns a body with the created encounter', async() => {
+            const model = EncounterModel()
+            const controller = new EncounterController(model)
+
+            const newEncounterRequestBody = {
+                title: `RandomTitle_${Math.random()}`,
+                description: `RandomDescription_${Math.random()}`,
+                actions: [`RandomAction_${Math.random()}`],
+            }
+            const ctx = fakeKoaContext(newEncounterRequestBody)
+
+            await controller.createEncounter(ctx, fakeKoaNext)
+
+            const { title, description, actions } = ctx.body.result
+            expect(title).toBe(newEncounterRequestBody.title)
+            expect(description).toBe(newEncounterRequestBody.description)
+            expect(actions.length).toBe(newEncounterRequestBody.actions.length)
         })
 
         test('returns a 400 if title does not exist on request body', async () => {
