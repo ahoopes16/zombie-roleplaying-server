@@ -25,24 +25,27 @@ export default class DBConnector {
      * Set the hostname of the MongoDB instance you would like to connect to
      * @param host The hostname of the MongoDB instance
      */
-    public setHost(host: string): void {
+    public setHost(host: string): DBConnector {
         this.host = host
+        return this
     }
 
     /**
      * Set the port number that will be applied to the Mongo URL
      * @param port Port number
      */
-    public setPort(port: number): void {
+    public setPort(port: number): DBConnector {
         this.port = port
+        return this
     }
 
     /**
      * Set the database name that will be applied to the Mongo URL
      * @param db Database name
      */
-    public setDB(db: string): void {
+    public setDB(db: string): DBConnector {
         this.db = db
+        return this
     }
 
     /** Builds a properly formatted Mongo URL. Current implementation does not support replica sets */
