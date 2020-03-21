@@ -15,13 +15,14 @@ export class EncounterController {
     public createEncounter: Koa.Middleware = async ctx => {
         const encounter = ctx.request.body
 
-        const hasProperTitle = !!(encounter.title && typeof encounter.title === 'string')
+        // TODO Maybe extract these out to a service?
+        const hasProperTitle = Boolean(encounter.title && typeof encounter.title === 'string')
         ctx.assert(hasProperTitle, 400, 'An encounter requires a title property of type string.')
 
-        const hasProperDescription = !!(encounter.description && typeof encounter.description === 'string')
+        const hasProperDescription = Boolean(encounter.description && typeof encounter.description === 'string')
         ctx.assert(hasProperDescription, 400, 'An encounter requires a description property of type string.')
 
-        const encounterWithSameTitle = !!(await this.model.findOne({ title: encounter.title }).exec())
+        const encounterWithSameTitle = Boolean(await this.model.findOne({ title: encounter.title }).exec())
         ctx.assert(!encounterWithSameTitle, 400, `An encounter with the title ${encounter.title} already exists.`)
 
         ctx.status = 201
