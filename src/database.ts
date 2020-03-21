@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose'
 import { Mongoose } from 'mongoose'
-import logger from '../util/logger.util'
-import env from '../environment'
+import logger from './util/logger.util'
+import env from './environment'
 
 export default class DBConnector {
     private host: string
