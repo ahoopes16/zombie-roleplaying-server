@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose'
 import { Mongoose } from 'mongoose'
 import logger from '../util/logger.util'
+import env from '../environment'
 
 export default class DBConnector {
     private host: string
@@ -14,7 +15,7 @@ export default class DBConnector {
      * @param port The port number for the MongoDB instance. Defaults to 27017
      * @param db The database name that you want to connect to. Defaults to 'zombie-rp'
      */
-    constructor(host = 'localhost', port = 27017, db = 'zombie-rp') {
+    constructor(host = env.mongo.host, port = env.mongo.port, db = env.mongo.db) {
         this.host = host
         this.port = port
         this.db = db

@@ -1,8 +1,8 @@
 import { createLogger, format, transports } from 'winston'
+import env from '../environment'
 
 const logger = createLogger({
-    // TODO Make the log level configurable via the environment
-    level: 'info',
+    level: env.logLevel,
     format: format.combine(format.json(), format.colorize()),
     transports: [
         new transports.File({ filename: 'error.log', level: 'error' }),
@@ -10,7 +10,7 @@ const logger = createLogger({
     ],
 })
 
-if (process.env.NODE_ENV !== 'production') {
+if (env.nodeEnv !== 'production') {
     logger.add(
         new transports.Console({
             format: format.simple(),

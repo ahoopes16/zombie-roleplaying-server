@@ -5,6 +5,7 @@ import errorHandler from './middleware/error-handler.middleware'
 import * as KoaLogger from 'koa-logger-winston'
 import logger from './util/logger.util'
 import DBConnector from './database'
+import env from './environment'
 
 const dbConnector = new DBConnector()
 dbConnector.connect()
@@ -12,6 +13,7 @@ dbConnector.connect()
 const app = new Koa()
 const router = new Router()
 const port = 8000
+    const port = env.port || 8000
 
 // Keep these as early as possible, takes care of parsing JSON, logging, and error handling
 app.use(bodyParser())
@@ -30,4 +32,4 @@ router.get('/', async ctx => {
 app.use(router.routes())
 app.use(router.allowedMethods())
 
-app.listen(port, () => console.log(`Zombie Roleplaying Server listening on port ${port}!`))
+    app.listen(port, () => logger.info(`Zombie Roleplaying Server listening on port ${port}!`))
