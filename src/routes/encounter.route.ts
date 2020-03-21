@@ -5,9 +5,10 @@ const encounterController = new EncounterController()
 const router = new Router({ prefix: '/v1/encounters' })
 
 router.get('/', encounterController.getEncounters)
-router.put('/', async () => console.log('PUT ENCOUNTERS'))
-router.patch('/', async () => console.log('PATCH ENCOUNTERS'))
 router.post('/', encounterController.createEncounter)
-router.delete('/', async () => console.log('DELETE ENCOUNTERS'))
+router.get('/:id', async () => console.log('INSPECT ENCOUNTER'))
+router.put('/:id', async () => console.log('PUT ENCOUNTER'))
+router.patch('/:id', async () => console.log('PATCH ENCOUNTER'))
+router.delete('/:id', async () => console.log('DELETE ENCOUNTER'))
 
 export default router
