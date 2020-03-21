@@ -19,10 +19,11 @@ afterAll(async () => {
     await mongoose.disconnect()
 })
 
+const model = EncounterModel()
+
 describe('encounter controller', () => {
     describe('getEncounters', () => {
         test('returns a status of 200', async () => {
-            const model = EncounterModel()
             const controller = new EncounterController(model)
             const ctx = fakeKoaContext()
 
@@ -32,7 +33,6 @@ describe('encounter controller', () => {
         })
 
         test('returns an empty array as the result when no encounters exist', async () => {
-            const model = EncounterModel()
             const controller = new EncounterController(model)
             const ctx = fakeKoaContext()
 
@@ -43,7 +43,6 @@ describe('encounter controller', () => {
         })
 
         test('returns array of encounters when they exist', async () => {
-            const model = EncounterModel()
             const controller = new EncounterController(model)
             const ctx = fakeKoaContext()
 
@@ -64,7 +63,6 @@ describe('encounter controller', () => {
 
     describe('createEncounter', () => {
         test('creates encounter when the request body is valid', async () => {
-            const model = EncounterModel()
             const controller = new EncounterController(model)
 
             const newEncounterRequestBody = {
@@ -83,7 +81,6 @@ describe('encounter controller', () => {
         })
 
         test('returns a 201 when encounter is successfully created', async () => {
-            const model = EncounterModel()
             const controller = new EncounterController(model)
 
             const newEncounterRequestBody = {
@@ -98,7 +95,6 @@ describe('encounter controller', () => {
         })
 
         test('returns a body with the created encounter', async () => {
-            const model = EncounterModel()
             const controller = new EncounterController(model)
 
             const newEncounterRequestBody = {
@@ -117,7 +113,6 @@ describe('encounter controller', () => {
         })
 
         test('returns a 400 if title does not exist on request body', async () => {
-            const model = EncounterModel()
             const controller = new EncounterController(model)
 
             const newEncounterRequestBody = {
@@ -138,7 +133,6 @@ describe('encounter controller', () => {
         })
 
         test('returns a 400 if title is not a string', async () => {
-            const model = EncounterModel()
             const controller = new EncounterController(model)
 
             const newEncounterRequestBody = {
@@ -160,7 +154,6 @@ describe('encounter controller', () => {
         })
 
         test('returns a 400 if description does not exist on request body', async () => {
-            const model = EncounterModel()
             const controller = new EncounterController(model)
 
             const newEncounterRequestBody = {
@@ -181,7 +174,6 @@ describe('encounter controller', () => {
         })
 
         test('returns a 400 if description is not a string', async () => {
-            const model = EncounterModel()
             const controller = new EncounterController(model)
 
             const newEncounterRequestBody = {
@@ -203,7 +195,6 @@ describe('encounter controller', () => {
         })
 
         test('returns a 400 if the title already exists in the database', async () => {
-            const model = EncounterModel()
             const controller = new EncounterController(model)
 
             const newEncounterRequestBody = {
@@ -229,7 +220,6 @@ describe('encounter controller', () => {
 
     describe('inspectEncounter', () => {
         test('returns a 200 when the encounter is found', async () => {
-            const model = EncounterModel()
             const controller = new EncounterController(model)
 
             const encounter = await model.create({
@@ -244,7 +234,6 @@ describe('encounter controller', () => {
         })
 
         test('returns the correct encounter document when it is found', async () => {
-            const model = EncounterModel()
             const controller = new EncounterController(model)
 
             const encounter = await model.create({
@@ -261,17 +250,16 @@ describe('encounter controller', () => {
             expect(ctx.body.result.actions.length).toBe(encounter.actions.length)
         })
 
-        test('returns a 500 if the given ID is not a valid Mongo ObjectID', async () => {
-            const model = EncounterModel()
+        test('returns a 400 if the given ID is not a valid Mongo ObjectID', async () => {
             const controller = new EncounterController(model)
-            const params = { id: 'nonValidMongoID' }
+            const params = { id: 'nonValidMongoObjectID' }
             const ctx = fakeKoaContext({}, params)
 
             try {
                 await controller.inspectEncounter(ctx, fakeKoaNext)
             } catch (error) {
                 const msg = `ID must be a valid Mongo ObjectID. Received ${params.id}`
-                expect(ctx.assert).toBeCalledWith(false, 500, msg)
+                expect(ctx.assert).toBeCalledWith(false, 400, msg)
                 return
             }
 
@@ -280,7 +268,75 @@ describe('encounter controller', () => {
         })
 
         test('returns a 404 if the encounter with the given ID is not found', async () => {
-            const model = EncounterModel()
+            const controller = new EncounterController(model)
+            const params = { id: new mongoose.mongo.ObjectID() }
+            const ctx = fakeKoaContext({}, params)
+
+            try {
+                await controller.inspectEncounter(ctx, fakeKoaNext)
+            } catch (error) {
+                const msg = `No encounter found with ID ${params.id}`
+                expect(ctx.assert).toBeCalledWith(false, 404, msg)
+                return
+            }
+
+            // Should not have reached this line
+            expect(true).toBe(false)
+        })
+    })
+
+    describe('deleteEncounter', () => {
+        test('returns a 200 when the encounter is successfully deleted', async () => {
+            const controller = new EncounterController(model)
+            const encounter = await model.create({
+                title: `RandomTitle_${Math.random()}`,
+                description: `RandomDescription_${Math.random()}`,
+            })
+
+            const params = { id: encounter._id }
+            const ctx = fakeKoaContext({}, params)
+
+            await controller.deleteEncounter(ctx, fakeKoaNext)
+
+            expect(ctx.status).toBe(200)
+        })
+
+        test('returns the deleted encounter document when it is successfully deleted', async () => {
+            const controller = new EncounterController(model)
+            const encounter = await model.create({
+                title: `RandomTitle_${Math.random()}`,
+                description: `RandomDescription_${Math.random()}`,
+            })
+
+            const params = { id: encounter._id }
+            const ctx = fakeKoaContext({}, params)
+
+            await controller.deleteEncounter(ctx, fakeKoaNext)
+
+            expect(ctx.body.result._id).toStrictEqual(encounter._id)
+            expect(ctx.body.result.title).toBe(encounter.title)
+            expect(ctx.body.result.description).toBe(encounter.description)
+            expect(ctx.body.result.actions.length).toBe(encounter.actions.length)
+        })
+
+        test('returns a 400 if the given ID is not a valid Mongo ObjectID', async () => {
+            const controller = new EncounterController(model)
+            const params = { id: 'nonValidMongObjectID' }
+            const ctx = fakeKoaContext({}, params)
+
+            try {
+                await controller.inspectEncounter(ctx, fakeKoaNext)
+            } catch (error) {
+                const msg = `ID must be a valid Mongo ObjectID. Received ${params.id}`
+                expect(ctx.assert).toBeCalledWith(false, 400, msg)
+                return
+            }
+
+            // Should not have reached this line
+            expect(true).toBe(false)
+        })
+
+        test('returns a 404 if the encounter with the given ID is not found', async () => {
             const controller = new EncounterController(model)
             const params = { id: new mongoose.mongo.ObjectID() }
             const ctx = fakeKoaContext({}, params)

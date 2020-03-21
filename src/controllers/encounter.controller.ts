@@ -37,7 +37,7 @@ export class EncounterController {
     /** Inspect a specific encounter document by providing the Mongo ID */
     public inspectEncounter: Koa.Middleware = async ctx => {
         const { id } = ctx.params
-        ctx.assert(isValidObjectId(id), 500, `ID must be a valid Mongo ObjectID. Received ${id}`)
+        ctx.assert(isValidObjectId(id), 400, `ID must be a valid Mongo ObjectID. Received ${id}`)
 
         const encounter = await this.model.findById(id)
 
@@ -45,5 +45,17 @@ export class EncounterController {
 
         ctx.status = 200
         ctx.body = { result: encounter }
+    }
+
+    /** Delete an encounter document with the given Mongo ID */
+    public deleteEncounter: Koa.Middleware = async ctx => {
+        const { id } = ctx.params
+        ctx.assert(isValidObjectId(id), 400, `ID must be a valid Mongo ObjectID. Received ${id}`)
+
+        const deletedEncounter = await this.model.findByIdAndDelete(id)
+        ctx.assert(Boolean(deletedEncounter), 404, `No encounter found with ID ${id}`)
+
+        ctx.status = 200
+        ctx.body = { result: deletedEncounter }
     }
 }
