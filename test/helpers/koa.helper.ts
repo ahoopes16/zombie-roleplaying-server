@@ -1,11 +1,12 @@
 import * as Koa from 'koa'
 
-export const fakeKoaContext = (requestBody = {}): Koa.Context => {
+export const fakeKoaContext = (requestBody = {}, params = {}): Koa.Context => {
     return ({
         request: {
             body: requestBody,
         },
         body: {},
+        params,
         status: 200,
         assert: jest.fn((bool: boolean, _status: number, message = 'Assert failed') => {
             if (!bool) {
