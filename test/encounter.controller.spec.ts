@@ -285,6 +285,14 @@ describe('encounter controller', () => {
         })
     })
 
+    describe('updateEncounter', () => {
+        test.todo('')
+    })
+
+    describe('patchEncounter', () => {
+        test.todo('')
+    })
+
     describe('deleteEncounter', () => {
         test('returns a 200 when the encounter is successfully deleted', async () => {
             const controller = new EncounterController(model)

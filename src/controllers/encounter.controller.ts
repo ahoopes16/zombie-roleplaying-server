@@ -47,6 +47,27 @@ export class EncounterController {
         ctx.body = { result: encounter }
     }
 
+    /**
+     * Update an encounter with the given Mongo ID. Must provide full object definition.
+     * Will create the given document if it does not exist.
+     */
+    public updateEncounter: Koa.Middleware = async ctx => {
+        const { id } = ctx.params
+        ctx.assert(isValidObjectId(id), 400, `ID must be a valid Mongo ObjectID. Received ${id}`)
+
+        ctx.status = 200
+        ctx.body = 'Coming Soon!'
+    }
+
+    /** Patch an encounter with the given Mongo ID. Only provide the values that you want to be changed */
+    public patchEncounter: Koa.Middleware = async ctx => {
+        const { id } = ctx.params
+        ctx.assert(isValidObjectId(id), 400, `ID must be a valid Mongo ObjectID. Received ${id}`)
+
+        ctx.status = 200
+        ctx.body = 'Coming Soon!'
+    }
+
     /** Delete an encounter document with the given Mongo ID */
     public deleteEncounter: Koa.Middleware = async ctx => {
         const { id } = ctx.params
