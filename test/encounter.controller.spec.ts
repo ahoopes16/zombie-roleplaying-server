@@ -21,6 +21,16 @@ afterAll(async () => {
 
 describe('encounter controller', () => {
     describe('getEncounters', () => {
+        test('returns a status of 200', async () => {
+            const model = EncounterModel()
+            const controller = new EncounterController(model)
+            const ctx = fakeKoaContext()
+
+            await controller.getEncounters(ctx, fakeKoaNext)
+
+            expect(ctx.status).toBe(200)
+        })
+
         test('returns an empty array as the result when no encounters exist', async () => {
             const model = EncounterModel()
             const controller = new EncounterController(model)
@@ -87,7 +97,7 @@ describe('encounter controller', () => {
             expect(ctx.status).toBe(201)
         })
 
-        test('returns a body with the created encounter', async() => {
+        test('returns a body with the created encounter', async () => {
             const model = EncounterModel()
             const controller = new EncounterController(model)
 
@@ -118,7 +128,8 @@ describe('encounter controller', () => {
             try {
                 await controller.createEncounter(ctx, fakeKoaNext)
             } catch (error) {
-                expect(ctx.assert).toBeCalledWith(false, 400, 'An encounter requires a title property of type string.')
+                const msg = 'An encounter requires a title property of type string.'
+                expect(ctx.assert).toBeCalledWith(false, 400, msg)
                 return
             }
 
@@ -139,7 +150,8 @@ describe('encounter controller', () => {
             try {
                 await controller.createEncounter(ctx, fakeKoaNext)
             } catch (error) {
-                expect(ctx.assert).toBeCalledWith(false, 400, 'An encounter requires a title property of type string.')
+                const msg = 'An encounter requires a title property of type string.'
+                expect(ctx.assert).toBeCalledWith(false, 400, msg)
                 return
             }
 
@@ -159,11 +171,8 @@ describe('encounter controller', () => {
             try {
                 await controller.createEncounter(ctx, fakeKoaNext)
             } catch (error) {
-                expect(ctx.assert).toBeCalledWith(
-                    false,
-                    400,
-                    'An encounter requires a description property of type string.',
-                )
+                const msg = 'An encounter requires a description property of type string.'
+                expect(ctx.assert).toBeCalledWith(false, 400, msg)
                 return
             }
 
@@ -184,11 +193,8 @@ describe('encounter controller', () => {
             try {
                 await controller.createEncounter(ctx, fakeKoaNext)
             } catch (error) {
-                expect(ctx.assert).toBeCalledWith(
-                    false,
-                    400,
-                    'An encounter requires a description property of type string.',
-                )
+                const msg = 'An encounter requires a description property of type string.'
+                expect(ctx.assert).toBeCalledWith(false, 400, msg)
                 return
             }
 
@@ -211,11 +217,79 @@ describe('encounter controller', () => {
             try {
                 await controller.createEncounter(ctx, fakeKoaNext)
             } catch (error) {
-                expect(ctx.assert).toBeCalledWith(
-                    false,
-                    400,
-                    `An encounter with the title ${newEncounterRequestBody.title} already exists.`,
-                )
+                const msg = `An encounter with the title ${newEncounterRequestBody.title} already exists.`
+                expect(ctx.assert).toBeCalledWith(false, 400, msg)
+                return
+            }
+
+            // Should not have reached this line
+            expect(true).toBe(false)
+        })
+    })
+
+    describe('inspectEncounter', () => {
+        test('returns a 200 when the encounter is found', async () => {
+            const model = EncounterModel()
+            const controller = new EncounterController(model)
+
+            const encounter = await model.create({
+                title: `RandomTitle_${Math.random()}`,
+                description: `RandomDescription_${Math.random}`,
+            })
+            const ctx = fakeKoaContext({}, { id: encounter._id })
+
+            await controller.inspectEncounter(ctx, fakeKoaNext)
+
+            expect(ctx.status).toBe(200)
+        })
+
+        test('returns the correct encounter document when it is found', async () => {
+            const model = EncounterModel()
+            const controller = new EncounterController(model)
+
+            const encounter = await model.create({
+                title: `RandomTitle_${Math.random()}`,
+                description: `RandomDescription_${Math.random}`,
+            })
+            const ctx = fakeKoaContext({}, { id: encounter._id })
+
+            await controller.inspectEncounter(ctx, fakeKoaNext)
+
+            expect(ctx.body.result._id).toStrictEqual(encounter._id)
+            expect(ctx.body.result.title).toBe(encounter.title)
+            expect(ctx.body.result.description).toBe(encounter.description)
+            expect(ctx.body.result.actions.length).toBe(encounter.actions.length)
+        })
+
+        test('returns a 500 if the given ID is not a valid Mongo ObjectID', async () => {
+            const model = EncounterModel()
+            const controller = new EncounterController(model)
+            const params = { id: 'nonValidMongoID' }
+            const ctx = fakeKoaContext({}, params)
+
+            try {
+                await controller.inspectEncounter(ctx, fakeKoaNext)
+            } catch (error) {
+                const msg = `ID must be a valid Mongo ObjectID. Received ${params.id}`
+                expect(ctx.assert).toBeCalledWith(false, 500, msg)
+                return
+            }
+
+            // Should not have reached this line
+            expect(true).toBe(false)
+        })
+
+        test('returns a 404 if the encounter with the given ID is not found', async () => {
+            const model = EncounterModel()
+            const controller = new EncounterController(model)
+            const params = { id: new mongoose.mongo.ObjectID() }
+            const ctx = fakeKoaContext({}, params)
+
+            try {
+                await controller.inspectEncounter(ctx, fakeKoaNext)
+            } catch (error) {
+                const msg = `No encounter found with ID ${params.id}`
+                expect(ctx.assert).toBeCalledWith(false, 404, msg)
                 return
             }
 
