@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose'
 import { Mongoose } from 'mongoose'
 import logger from '../util/logger.util'
+import env from '../environment'
 
 export default class DBConnector {
     private host: string
@@ -10,11 +11,11 @@ export default class DBConnector {
     /**
      * A connector to hook Mongoose into a given MongoDB instance.
      * Current implementation does not support replica sets or SSL connections.
-     * @param host The hostname of the MongoDB instance. Defaults to 'localhost'
-     * @param port The port number for the MongoDB instance. Defaults to 27017
-     * @param db The database name that you want to connect to. Defaults to 'zombie-rp'
+     * @param host The hostname of the MongoDB instance. Defaults to environment variable
+     * @param port The port number for the MongoDB instance. Defaults to environment variable
+     * @param db The database name that you want to connect to. Defaults to environment variable
      */
-    constructor(host = 'localhost', port = 27017, db = 'zombie-rp') {
+    constructor(host = env.mongo.host, port = env.mongo.port, db = env.mongo.db) {
         this.host = host
         this.port = port
         this.db = db

@@ -25,6 +25,7 @@
     "testTimeout": 1000
   },
   "dependencies": {
+    "dotenv": "^8.2.0",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
     "koa-logger-winston": "^0.0.2",
