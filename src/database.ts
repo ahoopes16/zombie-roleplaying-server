@@ -71,6 +71,7 @@ export default class DBConnector {
     public connect(url = this.buildMongoURL(), options = this.buildMongoOptions()): Promise<Mongoose> {
         logger.info(`Connecting to MongoDB at ${url}...`)
 
+        mongoose.set('useCreateIndex', true)
         const dbConnection = mongoose.connection
         dbConnection.on('error', error => {
             logger.error(`Failed to connect to MongoDB at ${url}. Error: ${error}`)
