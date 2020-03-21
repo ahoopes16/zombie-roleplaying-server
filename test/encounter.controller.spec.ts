@@ -7,6 +7,7 @@ import { fakeKoaContext, fakeKoaNext } from './helpers/koa.helper'
 
 beforeAll(async () => {
     const url = new DBConnector().setDB(env.mongo.testDb).buildMongoURL()
+    mongoose.set('useCreateIndex', true)
     await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 })
 
