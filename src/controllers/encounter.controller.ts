@@ -19,14 +19,9 @@ export class EncounterController {
     /** Create a new encounter document */
     public createEncounter: Koa.Middleware = async ctx => {
         const encounter = ctx.request.body
+        await this.validateEncounterRequestBody(encounter, ctx)
 
-        // TODO Maybe extract these out to a service?
-        const hasProperTitle = Boolean(encounter.title && typeof encounter.title === 'string')
-        ctx.assert(hasProperTitle, 400, 'An encounter requires a title property of type string.')
-
-        const hasProperDescription = Boolean(encounter.description && typeof encounter.description === 'string')
-        ctx.assert(hasProperDescription, 400, 'An encounter requires a description property of type string.')
-
+        // TODO Maybe extract this to a service?
         const encounterWithSameTitle = Boolean(await this.model.findOne({ title: encounter.title }).exec())
         ctx.assert(!encounterWithSameTitle, 400, `An encounter with the title ${encounter.title} already exists.`)
 
@@ -52,11 +47,26 @@ export class EncounterController {
      * Will create the given document if it does not exist.
      */
     public updateEncounter: Koa.Middleware = async ctx => {
-        const { id } = ctx.params
-        ctx.assert(isValidObjectId(id), 400, `ID must be a valid Mongo ObjectID. Received ${id}`)
+        const _id = ctx.params.id
+        const encounter = ctx.request.body
+        ctx.assert(isValidObjectId(_id), 400, `ID must be a valid Mongo ObjectID. Received ${_id}`)
+        await this.validateEncounterRequestBody(encounter, ctx)
 
-        ctx.status = 200
-        ctx.body = 'Coming Soon!'
+        const foundEncounter = await this.model.findById(_id)
+
+        if (foundEncounter) {
+            foundEncounter.overwrite(encounter)
+            await foundEncounter.save()
+            ctx.status = 200
+        } else {
+            const encounterWithSameTitle = Boolean(await this.model.findOne({ title: encounter.title }).exec())
+            ctx.assert(!encounterWithSameTitle, 400, `An encounter with the title ${encounter.title} already exists.`)
+
+            await this.model.create({ _id, ...encounter })
+            ctx.status = 201
+        }
+
+        ctx.body = { result: await this.model.findById(_id) }
     }
 
     /** Patch an encounter with the given Mongo ID. Only provide the values that you want to be changed */
@@ -78,5 +88,24 @@ export class EncounterController {
 
         ctx.status = 200
         ctx.body = { result: deletedEncounter }
+    }
+
+    /** Validate that all of the fields provided match the Encounter model */
+    private async validateEncounterRequestBody(encounter: any, ctx: Koa.Context): Promise<void> {
+        const hasProperTitle = Boolean(encounter.title && typeof encounter.title === 'string')
+        ctx.assert(hasProperTitle, 400, 'An encounter requires a title property of type string.')
+
+        const hasProperDescription = Boolean(encounter.description && typeof encounter.description === 'string')
+        ctx.assert(hasProperDescription, 400, 'An encounter requires a description property of type string.')
+
+        if (encounter.numberOfRuns) {
+            ctx.assert(typeof encounter.numberOfRuns === 'number', 400, "'numberOfRuns' property must be a number")
+        }
+
+        if (encounter.actions) {
+            const hasProperActions =
+                Array.isArray(encounter.actions) && encounter.actions.every((a: unknown) => typeof a === 'string')
+            ctx.assert(hasProperActions, 400, "'actions' property must be an array of strings")
+        }
     }
 }
