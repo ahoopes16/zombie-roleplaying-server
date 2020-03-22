@@ -32,10 +32,9 @@ export class EncounterController {
     /** Inspect a specific encounter document by providing the Mongo ID */
     public inspectEncounter: Koa.Middleware = async ctx => {
         const { id } = ctx.params
-        ctx.assert(isValidObjectId(id), 400, `ID must be a valid Mongo ObjectID. Received ${id}`)
+        ctx.assert(isValidObjectId(id), 404, `ID must be a valid Mongo ObjectID. Received ${id}`)
 
         const encounter = await this.model.findById(id)
-
         ctx.assert(Boolean(encounter), 404, `No encounter found with ID ${id}`)
 
         ctx.status = 200
@@ -49,7 +48,7 @@ export class EncounterController {
     public updateEncounter: Koa.Middleware = async ctx => {
         const _id = ctx.params.id
         const encounter = ctx.request.body
-        ctx.assert(isValidObjectId(_id), 400, `ID must be a valid Mongo ObjectID. Received ${_id}`)
+        ctx.assert(isValidObjectId(_id), 404, `ID must be a valid Mongo ObjectID. Received ${_id}`)
         await this.validateEncounterRequestBody(encounter, ctx)
 
         const foundEncounter = await this.model.findById(_id)
@@ -72,16 +71,27 @@ export class EncounterController {
     /** Patch an encounter with the given Mongo ID. Only provide the values that you want to be changed */
     public patchEncounter: Koa.Middleware = async ctx => {
         const { id } = ctx.params
-        ctx.assert(isValidObjectId(id), 400, `ID must be a valid Mongo ObjectID. Received ${id}`)
+        const encounter = ctx.request.body
+        ctx.assert(isValidObjectId(id), 404, `ID must be a valid Mongo ObjectID. Received ${id}`)
+
+        const foundEncounter = await this.model.findById(id)
+        ctx.assert(Boolean(foundEncounter), 404, `No encounter found with ID ${id}`)
+
+        if (encounter.title) {
+            const encounterWithSameTitle = Boolean(await this.model.findOne({ title: encounter.title }).exec())
+            ctx.assert(!encounterWithSameTitle, 400, `An encounter with the title ${encounter.title} already exists.`)
+        }
+
+        foundEncounter.set(ctx.request.body)
 
         ctx.status = 200
-        ctx.body = 'Coming Soon!'
+        ctx.body = { result: await foundEncounter.save() }
     }
 
     /** Delete an encounter document with the given Mongo ID */
     public deleteEncounter: Koa.Middleware = async ctx => {
         const { id } = ctx.params
-        ctx.assert(isValidObjectId(id), 400, `ID must be a valid Mongo ObjectID. Received ${id}`)
+        ctx.assert(isValidObjectId(id), 404, `ID must be a valid Mongo ObjectID. Received ${id}`)
 
         const deletedEncounter = await this.model.findByIdAndDelete(id)
         ctx.assert(Boolean(deletedEncounter), 404, `No encounter found with ID ${id}`)
