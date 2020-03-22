@@ -8,6 +8,7 @@ export default {
         host: process.env.MONGO_HOST,
         port: parseInt(process.env.MONGO_PORT, 10),
         db: process.env.MONGO_DB,
+        testDb: process.env.TEST_MONGO_DB,
     },
     logLevel: process.env.LOG_LEVEL,
 }

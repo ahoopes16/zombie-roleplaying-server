@@ -28,6 +28,7 @@
     "dotenv": "^8.2.0",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
+    "koa-combine-routers": "^4.0.2",
     "koa-logger-winston": "^0.0.2",
     "koa-router": "^8.0.8",
     "mongoose": "^5.9.5",
