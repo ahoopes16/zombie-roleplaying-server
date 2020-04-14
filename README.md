@@ -1,7 +1,7 @@
 # zombie-roleplaying-server
 A Koa server to host my zombie role-playing game!
 
-## To Run
+## To Run (Development)
 1. Clone this repository
 1. Run `npm install` or `yarn`
 1. Have a local instance of MongoDB installed and running
@@ -9,6 +9,12 @@ A Koa server to host my zombie role-playing game!
    1. A lot of them are probably fine defaulted as they are!
 1. Run `yarn start`
 1. Enjoy!
+
+## To Run (Docker)
+1. Clone this repository
+1. Have [Docker](https://www.docker.com/) installed
+1. Run `docker-compose up`
+1. The server will be up and running at the default port with a MongoDB instance behind it!
 
 ## To Test
 1. Run `yarn` if you haven't
