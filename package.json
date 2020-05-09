@@ -9,10 +9,12 @@
   "private": true,
   "scripts": {
     "start": "nodemon --watch src/**/* -e ts --exec ts-node ./src/server.ts",
+    "start-build": "node build/server.js",
     "start-docker": "ts-node ./src/server.ts",
     "lint": "eslint ./src/**/*.ts",
     "lint-fix": "yarn lint --fix",
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "build": "rm -rf build/ && tsoa spec && tsoa routes && tsc --outDir build"
   },
   "husky": {
     "hooks": {
@@ -26,6 +28,8 @@
     "testTimeout": 1000
   },
   "dependencies": {
+    "@koa/router": "^8.0.8",
+    "@types/koa__router": "^8.0.2",
     "dotenv": "^8.2.0",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
