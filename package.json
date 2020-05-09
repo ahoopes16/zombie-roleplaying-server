@@ -34,6 +34,7 @@
     "koa-router": "^8.0.8",
     "koa2-cors": "^2.0.6",
     "mongoose": "^5.9.5",
+    "tsoa": "^3.0.8",
     "winston": "^3.2.1"
   },
   "devDependencies": {
