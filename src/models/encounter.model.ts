@@ -51,4 +51,4 @@ const encounterSchema = new Schema(
     { timestamps: true },
 )
 
-export default (): Model<Encounter> => model<Encounter>('Encounter', encounterSchema)
+export default (): Model<Encounter & Document> => model<Encounter & Document>('Encounter', encounterSchema)
