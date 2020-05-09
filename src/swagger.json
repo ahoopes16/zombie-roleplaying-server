@@ -1,0 +1,194 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"Encounter": {
+				"description": "Encounters are events that can happen to you as a player.\r\nTheir titles must be unique, and a list of actions the player\r\ncan take may be defined.",
+				"properties": {
+					"title": {
+						"type": "string",
+						"description": "A fun title for the encounter.",
+						"example": "A Zombie Grabs Your Leg!"
+					},
+					"description": {
+						"type": "string",
+						"description": "Some text describing what happens in this encounter.",
+						"example": "You can tell from here that it has terrible breath."
+					},
+					"actions": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "A list of actions the user can take when they hit this encounter.",
+						"example": [
+							"Attempt to kick it away!"
+						]
+					},
+					"numberOfRuns": {
+						"type": "number",
+						"format": "double",
+						"description": "How many times this encounter has been run.\r\nDefaults to 0.",
+						"example": 0
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "The date this document was created. Created by Mongoose."
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time",
+						"description": "The last date this document was updated. Created by Mongoose."
+					},
+					"__v": {
+						"type": "number",
+						"format": "double",
+						"description": "The version number for this document. Created by Mongoose."
+					}
+				},
+				"required": [
+					"title",
+					"description",
+					"numberOfRuns",
+					"createdAt",
+					"updatedAt",
+					"__v"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"JSONResponse_Encounter_": {
+				"properties": {
+					"result": {
+						"$ref": "#/components/schemas/Encounter"
+					}
+				},
+				"required": [
+					"result"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ValidateErrorJSON": {
+				"properties": {
+					"error": {
+						"type": "string",
+						"enum": [
+							"Validation Failed"
+						],
+						"nullable": false
+					},
+					"details": {
+						"properties": {},
+						"additionalProperties": {
+							"additionalProperties": true
+						},
+						"type": "object"
+					}
+				},
+				"required": [
+					"error",
+					"details"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Pick_Encounter.title-or-description-or-actions_": {
+				"properties": {
+					"title": {
+						"type": "string",
+						"description": "A fun title for the encounter.",
+						"example": "A Zombie Grabs Your Leg!"
+					},
+					"description": {
+						"type": "string",
+						"description": "Some text describing what happens in this encounter.",
+						"example": "You can tell from here that it has terrible breath."
+					},
+					"actions": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "A list of actions the user can take when they hit this encounter.",
+						"example": [
+							"Attempt to kick it away!"
+						]
+					}
+				},
+				"required": [
+					"title",
+					"description"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"EncounterCreationParams": {
+				"$ref": "#/components/schemas/Pick_Encounter.title-or-description-or-actions_"
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "zombie-roleplaying-server",
+		"version": "1.0.0",
+		"description": "A server to do all the work behind my zombie roleplaying game",
+		"license": {
+			"name": "MIT"
+		}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/encounters": {
+			"post": {
+				"operationId": "CreateEncounter",
+				"responses": {
+					"201": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/JSONResponse_Encounter_"
+								}
+							}
+						},
+						"description": "Successfully Created"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ValidateErrorJSON"
+								}
+							}
+						},
+						"description": "Validation Failed"
+					}
+				},
+				"description": "Creates an encounter.\r\nSupply the title, description, and actions optionally.\r\nThe title must be unique, or else you will receive an error.",
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"description": "A JSON body containing the title, description, and optionally a list of actions.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/EncounterCreationParams"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "https://localhost:8000/v1"
+		}
+	]
+}
