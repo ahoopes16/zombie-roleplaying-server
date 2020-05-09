@@ -1,0 +1,16 @@
+{
+    "entryFile": "src/server.ts",
+    "noImplicitAdditionalProperties": "throw-on-extras",
+    "controllerPathGlobs": ["src/**/*controller.ts"],
+    "spec": {
+        "outputDirectory": "src",
+        "specVersion": 3,
+        "basePath": "/v1",
+        "host": "localhost:8000"
+    },
+    "routes": {
+        "basePath": "/v1",
+        "routesDir": "src",
+        "middleware": "koa"
+    }
+}
