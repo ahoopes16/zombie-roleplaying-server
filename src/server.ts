@@ -1,12 +1,13 @@
 import * as Koa from 'koa'
 import * as bodyParser from 'koa-body'
 import * as cors from 'koa2-cors'
+import * as Router from 'koa-router'
 import errorHandler from './middleware/error-handler.middleware'
 import * as KoaLogger from 'koa-logger-winston'
-import router from './routes'
 import logger from './util/logger.util'
 import DBConnector from './database'
 import env from './environment'
+import { RegisterRoutes } from './routes'
 
 async function runServer(): Promise<void> {
     await new DBConnector().connect()
@@ -21,7 +22,10 @@ async function runServer(): Promise<void> {
     app.use(errorHandler)
 
     // Apply routes
-    app.use(router())
+    const tsoaRouter = new Router({})
+    RegisterRoutes(tsoaRouter)
+    app.use(tsoaRouter.routes())
+    app.use(tsoaRouter.allowedMethods())
 
     // Start listening
     app.listen(port, () => logger.info(`Zombie Roleplaying Server listening on port ${port}!`))
