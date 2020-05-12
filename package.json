@@ -28,6 +28,7 @@
     "testTimeout": 1000
   },
   "dependencies": {
+    "@hapi/boom": "^9.1.0",
     "@koa/router": "^8.0.8",
     "@types/koa__router": "^8.0.2",
     "dotenv": "^8.2.0",
