@@ -41,6 +41,8 @@ export interface Encounter {
     __v: number
 }
 
+export type EncounterCreationParams = Pick<Encounter, 'title' | 'description' | 'actions'>
+
 const encounterSchema = new Schema(
     {
         title: { type: String, required: true, unique: true, trim: true },

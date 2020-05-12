@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Response, Route, SuccessResponse } from 'tsoa'
-import { Encounter } from '../models/encounter.model'
-import { EncounterService, EncounterCreationParams } from '../services/encounter.service'
+import { Encounter, EncounterCreationParams } from '../models/encounter.model'
+import { EncounterService } from '../services/encounter.service'
 import { ValidateErrorJSON } from '../middleware/error-handler.middleware'
 import { JSONResponse } from '../types/JSONResponse.type'
 
@@ -22,9 +22,8 @@ export class EncounterController extends Controller {
     @Response<ValidateErrorJSON>(400, 'Validation Failed')
     @SuccessResponse(201, 'Successfully Created')
     @Post()
-    public async createEncounter(@Body() requestBody: EncounterCreationParams): Promise<JSONResponse<Encounter>> {
+    public async postEncounter(@Body() requestBody: EncounterCreationParams): Promise<JSONResponse<Encounter>> {
         this.setStatus(201)
-        const result = await this.service.createEncounter(requestBody)
-        return { result }
+        return { result: await this.service.createEncounter(requestBody) }
     }
 }

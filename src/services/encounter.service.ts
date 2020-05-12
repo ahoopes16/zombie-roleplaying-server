@@ -1,7 +1,6 @@
 import { Model, Document } from 'mongoose'
-import EncounterModel, { Encounter } from '../models/encounter.model'
-
-export type EncounterCreationParams = Pick<Encounter, 'title' | 'description' | 'actions'>
+import EncounterModel, { Encounter, EncounterCreationParams } from '../models/encounter.model'
+import * as Boom from '@hapi/boom'
 
 export class EncounterService {
     private model: Model<Encounter & Document>
@@ -10,7 +9,14 @@ export class EncounterService {
         this.model = model
     }
 
-    public createEncounter(encounterParams: EncounterCreationParams): Promise<Encounter> {
+    public async createEncounter(encounterParams: EncounterCreationParams): Promise<Encounter> {
+        const { title } = encounterParams
+
+        const encounterAlreadyExists = Boolean(await this.model.findOne({ title }).exec())
+        if (encounterAlreadyExists) {
+            throw Boom.badRequest(`An encounter with the title "${title}" already exists.`)
+        }
+
         return this.model.create(encounterParams)
     }
 }
