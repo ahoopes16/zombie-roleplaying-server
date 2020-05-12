@@ -8,13 +8,12 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "nodemon --watch src/**/* -e ts --exec ts-node ./src/server.ts",
-    "start-build": "node build/server.js",
-    "start-docker": "ts-node ./src/server.ts",
+    "start": "yarn && yarn build && nodemon --watch src/**/* -e ts --exec ts-node ./src/server.ts",
+    "start-docker": "yarn build && ts-node ./src/server.ts",
     "lint": "eslint ./src/**/*.ts",
     "lint-fix": "yarn lint --fix",
     "test": "jest --verbose",
-    "build": "rm -rf build/ && tsoa spec && tsoa routes && tsc --outDir build"
+    "build": "tsoa spec && tsoa routes"
   },
   "husky": {
     "hooks": {
