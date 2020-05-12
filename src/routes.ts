@@ -34,8 +34,7 @@ const models: TsoaRoute.Models = {
     "ValidateErrorJSON": {
         "dataType": "refObject",
         "properties": {
-            "error": { "dataType": "enum", "enums": ["Validation Failed"], "required": true },
-            "details": { "dataType": "nestedObjectLiteral", "nestedProperties": {}, "additionalProperties": { "dataType": "any" }, "required": true },
+            "error": { "dataType": "string", "required": true },
         },
         "additionalProperties": false,
     },

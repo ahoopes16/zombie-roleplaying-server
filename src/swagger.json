@@ -77,23 +77,11 @@
 			"ValidateErrorJSON": {
 				"properties": {
 					"error": {
-						"type": "string",
-						"enum": [
-							"Validation Failed"
-						],
-						"nullable": false
-					},
-					"details": {
-						"properties": {},
-						"additionalProperties": {
-							"additionalProperties": true
-						},
-						"type": "object"
+						"type": "string"
 					}
 				},
 				"required": [
-					"error",
-					"details"
+					"error"
 				],
 				"type": "object",
 				"additionalProperties": false
