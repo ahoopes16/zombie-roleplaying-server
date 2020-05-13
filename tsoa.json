@@ -1,12 +1,15 @@
 {
+    "name": "Zombie RPG 3000",
     "entryFile": "src/server.ts",
     "noImplicitAdditionalProperties": "throw-on-extras",
     "controllerPathGlobs": ["src/**/*controller.ts"],
     "spec": {
+        "name": "Zombie RPG 3000",
         "outputDirectory": "src",
         "specVersion": 3,
         "basePath": "/v1",
-        "host": "localhost:8000"
+        "host": "localhost:8000",
+        "schemes": ["http"]
     },
     "routes": {
         "basePath": "/v1",
