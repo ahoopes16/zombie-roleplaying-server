@@ -35,10 +35,8 @@ export class EncounterController extends Controller {
     @SuccessResponse(200, 'Success')
     @Get('{id}')
     public async getEncounter(@Path() id: string): Promise<SuccessResponseJSON<Encounter>> {
-        const encounter = await this.service.inspectEncounter(id)
-
-        this.setStatus(!encounter ? 404 : 200)
-        return { result: encounter }
+        this.setStatus(200)
+        return { result: await this.service.inspectEncounter(id) }
     }
 
     /**

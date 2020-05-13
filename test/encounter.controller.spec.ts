@@ -4,7 +4,6 @@ import { createFakeEncounter } from './helpers/encounter.helper'
 import DBConnector from '../src/database'
 import env from '../src/environment'
 import * as mongoose from 'mongoose'
-import { ObjectId } from 'mongodb'
 
 beforeAll(async () => {
     const url = new DBConnector().setDB(env.mongo.testDb).buildMongoURL()
@@ -69,16 +68,6 @@ describe('encounter controller', () => {
             expect(actual.result).toBeDefined()
             expect(actual.result.title).toBe(expected.title)
             expect(actual.result.description).toBe(expected.description)
-        })
-
-        test('returns "Not Found" when encounter is not found', async () => {
-            const controller = new EncounterController()
-            const id = new ObjectId().toString()
-
-            const actual = await controller.getEncounter(id)
-
-            expect(actual.result).toBeDefined()
-            expect(actual.result).toBeNull()
         })
     })
 

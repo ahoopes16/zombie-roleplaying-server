@@ -62,7 +62,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"JSONResponse_Encounter-Array_": {
+			"SuccessResponseJSON_Encounter-Array_": {
 				"properties": {
 					"result": {
 						"items": {
@@ -89,22 +89,10 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"JSONResponse_Encounter_": {
+			"SuccessResponseJSON_Encounter_": {
 				"properties": {
 					"result": {
 						"$ref": "#/components/schemas/Encounter"
-					}
-				},
-				"required": [
-					"result"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"JSONResponse_string_": {
-				"properties": {
-					"result": {
-						"type": "string"
 					}
 				},
 				"required": [
@@ -167,7 +155,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/JSONResponse_Encounter-Array_"
+									"$ref": "#/components/schemas/SuccessResponseJSON_Encounter-Array_"
 								}
 							}
 						},
@@ -195,7 +183,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/JSONResponse_Encounter_"
+									"$ref": "#/components/schemas/SuccessResponseJSON_Encounter_"
 								}
 							}
 						},
@@ -236,7 +224,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/JSONResponse_Encounter_"
+									"$ref": "#/components/schemas/SuccessResponseJSON_Encounter_"
 								}
 							}
 						},
@@ -256,11 +244,11 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/JSONResponse_string_"
+									"$ref": "#/components/schemas/ErrorResponseJSON"
 								}
 							}
 						},
-						"description": "Not Found"
+						"description": "Encounter Not Found"
 					},
 					"500": {
 						"content": {

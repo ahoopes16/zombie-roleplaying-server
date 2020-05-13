@@ -3,6 +3,7 @@ import EncounterModel, { EncounterCreationParams } from '../src/models/encounter
 import { createFakeEncounter } from './helpers/encounter.helper'
 import DBConnector from '../src/database'
 import env from '../src/environment'
+import { ObjectId } from 'mongodb'
 import * as mongoose from 'mongoose'
 import * as Boom from '@hapi/boom'
 
@@ -71,7 +72,17 @@ describe('encounter service', () => {
 
             const service = new EncounterService()
 
-            expect(() => service.inspectEncounter(invalidId)).toThrow(expectedError)
+            await expect(service.inspectEncounter(invalidId)).rejects.toThrow(expectedError)
+        })
+
+        test('throws a NotFound error when given a valid Mongo ID that does not exist', async () => {
+            const mongoId = new ObjectId().toString()
+            const errorMessage = `Encounter with ID "${mongoId}" not found.`
+            const expectedError = Boom.notFound(errorMessage)
+
+            const service = new EncounterService()
+
+            await expect(service.inspectEncounter(mongoId)).rejects.toThrow(expectedError)
         })
     })
 

@@ -13,12 +13,17 @@ export class EncounterService {
         return this.model.find().exec()
     }
 
-    public inspectEncounter(id: string): Promise<Encounter & Document> {
-        if (!isValidObjectId(id)) {
-            throw Boom.badRequest(`Invalid encounter ID. Please give a valid Mongo ObjectID. Received "${id}".`)
+    public async inspectEncounter(_id: string): Promise<Encounter & Document> {
+        if (!isValidObjectId(_id)) {
+            throw Boom.badRequest(`Invalid encounter ID. Please give a valid Mongo ObjectID. Received "${_id}".`)
         }
 
-        return this.model.findOne({ _id: id }).exec()
+        const encounter = await this.model.findOne({ _id }).exec()
+        if (!encounter) {
+            throw Boom.notFound(`Encounter with ID "${_id}" not found.`)
+        }
+
+        return encounter
     }
 
     public async createEncounter(encounterParams: EncounterCreationParams): Promise<Encounter & Document> {

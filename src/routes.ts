@@ -23,7 +23,7 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "JSONResponse_Encounter-Array_": {
+    "SuccessResponseJSON_Encounter-Array_": {
         "dataType": "refObject",
         "properties": {
             "result": { "dataType": "array", "array": { "ref": "Encounter" }, "required": true },
@@ -39,18 +39,10 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "JSONResponse_Encounter_": {
+    "SuccessResponseJSON_Encounter_": {
         "dataType": "refObject",
         "properties": {
             "result": { "ref": "Encounter", "required": true },
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "JSONResponse_string_": {
-        "dataType": "refObject",
-        "properties": {
-            "result": { "dataType": "string", "required": true },
         },
         "additionalProperties": false,
     },
