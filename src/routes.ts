@@ -23,18 +23,26 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "JSONResponse_Encounter_": {
+    "JSONResponse_Encounter-Array_": {
         "dataType": "refObject",
         "properties": {
-            "result": { "ref": "Encounter", "required": true },
+            "result": { "dataType": "array", "array": { "ref": "Encounter" }, "required": true },
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ValidateErrorJSON": {
+    "ErrorResponseJSON": {
         "dataType": "refObject",
         "properties": {
             "error": { "dataType": "string", "required": true },
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "JSONResponse_Encounter_": {
+        "dataType": "refObject",
+        "properties": {
+            "result": { "ref": "Encounter", "required": true },
         },
         "additionalProperties": false,
     },
@@ -59,6 +67,25 @@ export function RegisterRoutes(router: KoaRouter) {
     //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
     //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
     // ###########################################################################################################
+    router.get('/v1/encounters',
+        async (context: any, next: any) => {
+            const args = {
+            };
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, context);
+            } catch (error) {
+                context.status = error.status;
+                context.throw(error.status, JSON.stringify({ fields: error.fields }));
+            }
+
+            const controller = new EncounterController();
+
+            const promise = controller.getEncounters.apply(controller, validatedArgs as any);
+            return promiseHandler(controller, promise, context, next);
+        });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     router.post('/v1/encounters',
         async (context: any, next: any) => {
             const args = {
@@ -75,7 +102,7 @@ export function RegisterRoutes(router: KoaRouter) {
 
             const controller = new EncounterController();
 
-            const promise = controller.createEncounter.apply(controller, validatedArgs as any);
+            const promise = controller.postEncounter.apply(controller, validatedArgs as any);
             return promiseHandler(controller, promise, context, next);
         });
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

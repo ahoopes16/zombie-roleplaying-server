@@ -62,10 +62,13 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"JSONResponse_Encounter_": {
+			"JSONResponse_Encounter-Array_": {
 				"properties": {
 					"result": {
-						"$ref": "#/components/schemas/Encounter"
+						"items": {
+							"$ref": "#/components/schemas/Encounter"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
@@ -74,7 +77,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"ValidateErrorJSON": {
+			"ErrorResponseJSON": {
 				"properties": {
 					"error": {
 						"type": "string"
@@ -82,6 +85,18 @@
 				},
 				"required": [
 					"error"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"JSONResponse_Encounter_": {
+				"properties": {
+					"result": {
+						"$ref": "#/components/schemas/Encounter"
+					}
+				},
+				"required": [
+					"result"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -123,7 +138,7 @@
 		"securitySchemes": {}
 	},
 	"info": {
-		"title": "zombie-roleplaying-server",
+		"title": "Zombie RPG 3000",
 		"version": "1.0.0",
 		"description": "A server to do all the work behind my zombie roleplaying game",
 		"license": {
@@ -133,8 +148,36 @@
 	"openapi": "3.0.0",
 	"paths": {
 		"/encounters": {
+			"get": {
+				"operationId": "GetEncounters",
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/JSONResponse_Encounter-Array_"
+								}
+							}
+						},
+						"description": "Success"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponseJSON"
+								}
+							}
+						},
+						"description": "Internal Server Error"
+					}
+				},
+				"description": "Get a list of all encounters.\r\nCurrently there is no pagination or limits implemented.",
+				"security": [],
+				"parameters": []
+			},
 			"post": {
-				"operationId": "CreateEncounter",
+				"operationId": "PostEncounter",
 				"responses": {
 					"201": {
 						"content": {
@@ -150,7 +193,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ValidateErrorJSON"
+									"$ref": "#/components/schemas/ErrorResponseJSON"
 								}
 							}
 						},
@@ -176,7 +219,7 @@
 	},
 	"servers": [
 		{
-			"url": "https://localhost:8000/v1"
+			"url": "http://localhost:8000/v1"
 		}
 	]
 }
