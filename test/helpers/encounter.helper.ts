@@ -9,6 +9,6 @@ const defaultEncounterParams: EncounterCreationParams = {
 export const createFakeEncounter = (
     model: Model<Encounter & Document> = EncounterModel(),
     encounterParams: EncounterCreationParams = defaultEncounterParams,
-): Promise<Encounter> => {
+): Promise<Encounter & Document> => {
     return model.create(encounterParams)
 }

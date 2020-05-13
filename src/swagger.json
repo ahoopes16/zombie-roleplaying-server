@@ -101,6 +101,18 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"JSONResponse_string_": {
+				"properties": {
+					"result": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"result"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Pick_Encounter.title-or-description-or-actions_": {
 				"properties": {
 					"title": {
@@ -214,6 +226,66 @@
 						}
 					}
 				}
+			}
+		},
+		"/encounters/{id}": {
+			"get": {
+				"operationId": "GetEncounter",
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/JSONResponse_Encounter_"
+								}
+							}
+						},
+						"description": "Success"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponseJSON"
+								}
+							}
+						},
+						"description": "Validation Failed"
+					},
+					"404": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/JSONResponse_string_"
+								}
+							}
+						},
+						"description": "Not Found"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponseJSON"
+								}
+							}
+						},
+						"description": "Internal Server Error"
+					}
+				},
+				"description": "Get a specific encounter by Mongo ID.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Mongo ObjectID of the desired encounter",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		}
 	},

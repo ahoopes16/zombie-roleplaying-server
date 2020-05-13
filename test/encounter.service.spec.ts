@@ -46,6 +46,35 @@ describe('encounter service', () => {
         })
     })
 
+    describe('inspectEncounter', () => {
+        test('happy path - return encounter', async () => {
+            const service = new EncounterService()
+            const encounterParams: EncounterCreationParams = {
+                title: `Title_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+            }
+
+            const expected = await createFakeEncounter(model, encounterParams)
+
+            const actual = await service.inspectEncounter(expected._id)
+
+            expect(actual).toBeTruthy()
+            expect(actual._id).toStrictEqual(expected._id)
+            expect(actual.title).toBe(expected.title)
+            expect(actual.description).toBe(expected.description)
+        })
+
+        test('throws a BadRequest error when given an invalid Mongo ID', async () => {
+            const invalidId = `invalid-id-${Math.random()}`
+            const errorMessage = `Invalid encounter ID. Please give a valid Mongo ObjectID. Received "${invalidId}".`
+            const expectedError = Boom.badRequest(errorMessage)
+
+            const service = new EncounterService()
+
+            expect(() => service.inspectEncounter(invalidId)).toThrow(expectedError)
+        })
+    })
+
     describe('createEncounter', () => {
         test('happy path - returns created encounter', async () => {
             const expected: EncounterCreationParams = {

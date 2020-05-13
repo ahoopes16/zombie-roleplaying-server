@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Response, Route, SuccessResponse, Get } from 'tsoa'
+import { Body, Controller, Post, Path, Response, Route, SuccessResponse, Get } from 'tsoa'
 import { Encounter, EncounterCreationParams } from '../models/encounter.model'
 import { EncounterService } from '../services/encounter.service'
 import { ErrorResponseJSON } from '../middleware/error-handler.middleware'
@@ -23,6 +23,22 @@ export class EncounterController extends Controller {
     public async getEncounters(): Promise<JSONResponse<Encounter[]>> {
         this.setStatus(200)
         return { result: await this.service.listEncounters() }
+    }
+
+    /**
+     * Get a specific encounter by Mongo ID.
+     * @param id Mongo ObjectID of the desired encounter
+     */
+    @Response<JSONResponse<string>>(404, 'Not Found')
+    @Response<ErrorResponseJSON>(400, 'Validation Failed')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
+    @SuccessResponse(200, 'Success')
+    @Get('{id}')
+    public async getEncounter(@Path() id: string): Promise<JSONResponse<Encounter>> {
+        const encounter = await this.service.inspectEncounter(id)
+
+        this.setStatus(!encounter ? 404 : 200)
+        return { result: encounter }
     }
 
     /**

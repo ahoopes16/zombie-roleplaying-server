@@ -4,7 +4,7 @@ import { createFakeEncounter } from './helpers/encounter.helper'
 import DBConnector from '../src/database'
 import env from '../src/environment'
 import * as mongoose from 'mongoose'
-import { Controller } from 'tsoa'
+import { ObjectId } from 'mongodb'
 
 beforeAll(async () => {
     const url = new DBConnector().setDB(env.mongo.testDb).buildMongoURL()
@@ -52,6 +52,33 @@ describe('encounter controller', () => {
             expect(actual.result.length).toBe(2)
             expect(actual.result.find(encounter => encounter.title === encounterOne.title)).toBeTruthy()
             expect(actual.result.find(encounter => encounter.title === encounterTwo.title)).toBeTruthy()
+        })
+    })
+
+    describe('getEncounter', () => {
+        test('happy path - returns desired encounter', async () => {
+            const controller = new EncounterController()
+            const encounterParams: EncounterCreationParams = {
+                title: `Title_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+            }
+            const expected = await createFakeEncounter(model, encounterParams)
+
+            const actual = await controller.getEncounter(expected._id)
+
+            expect(actual.result).toBeDefined()
+            expect(actual.result.title).toBe(expected.title)
+            expect(actual.result.description).toBe(expected.description)
+        })
+
+        test('returns "Not Found" when encounter is not found', async () => {
+            const controller = new EncounterController()
+            const id = new ObjectId().toString()
+
+            const actual = await controller.getEncounter(id)
+
+            expect(actual.result).toBeDefined()
+            expect(actual.result).toBeNull()
         })
     })
 

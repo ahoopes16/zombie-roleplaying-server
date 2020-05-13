@@ -47,6 +47,14 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "JSONResponse_string_": {
+        "dataType": "refObject",
+        "properties": {
+            "result": { "dataType": "string", "required": true },
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Pick_Encounter.title-or-description-or-actions_": {
         "dataType": "refAlias",
         "type": { "dataType": "nestedObjectLiteral", "nestedProperties": { "title": { "dataType": "string", "required": true }, "description": { "dataType": "string", "required": true }, "actions": { "dataType": "array", "array": { "dataType": "string" } } }, "validators": {} },
@@ -83,6 +91,26 @@ export function RegisterRoutes(router: KoaRouter) {
             const controller = new EncounterController();
 
             const promise = controller.getEncounters.apply(controller, validatedArgs as any);
+            return promiseHandler(controller, promise, context, next);
+        });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    router.get('/v1/encounters/:id',
+        async (context: any, next: any) => {
+            const args = {
+                id: { "in": "path", "name": "id", "required": true, "dataType": "string" },
+            };
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, context);
+            } catch (error) {
+                context.status = error.status;
+                context.throw(error.status, JSON.stringify({ fields: error.fields }));
+            }
+
+            const controller = new EncounterController();
+
+            const promise = controller.getEncounter.apply(controller, validatedArgs as any);
             return promiseHandler(controller, promise, context, next);
         });
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
