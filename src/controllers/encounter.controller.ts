@@ -2,7 +2,7 @@ import { Body, Controller, Post, Path, Response, Route, SuccessResponse, Get } f
 import { Encounter, EncounterCreationParams } from '../models/encounter.model'
 import { EncounterService } from '../services/encounter.service'
 import { ErrorResponseJSON } from '../middleware/error-handler.middleware'
-import { JSONResponse } from '../types/JSONResponse.type'
+import { SuccessResponseJSON } from '../types/Response.type'
 
 @Route('encounters')
 export class EncounterController extends Controller {
@@ -20,7 +20,7 @@ export class EncounterController extends Controller {
     @Response<ErrorResponseJSON>(500, 'Internal Server Error')
     @SuccessResponse(200, 'Success')
     @Get()
-    public async getEncounters(): Promise<JSONResponse<Encounter[]>> {
+    public async getEncounters(): Promise<SuccessResponseJSON<Encounter[]>> {
         this.setStatus(200)
         return { result: await this.service.listEncounters() }
     }
@@ -29,12 +29,12 @@ export class EncounterController extends Controller {
      * Get a specific encounter by Mongo ID.
      * @param id Mongo ObjectID of the desired encounter
      */
-    @Response<JSONResponse<string>>(404, 'Not Found')
+    @Response<ErrorResponseJSON>(404, 'Encounter Not Found')
     @Response<ErrorResponseJSON>(400, 'Validation Failed')
     @Response<ErrorResponseJSON>(500, 'Internal Server Error')
     @SuccessResponse(200, 'Success')
     @Get('{id}')
-    public async getEncounter(@Path() id: string): Promise<JSONResponse<Encounter>> {
+    public async getEncounter(@Path() id: string): Promise<SuccessResponseJSON<Encounter>> {
         const encounter = await this.service.inspectEncounter(id)
 
         this.setStatus(!encounter ? 404 : 200)
@@ -50,7 +50,7 @@ export class EncounterController extends Controller {
     @Response<ErrorResponseJSON>(400, 'Validation Failed')
     @SuccessResponse(201, 'Successfully Created')
     @Post()
-    public async postEncounter(@Body() requestBody: EncounterCreationParams): Promise<JSONResponse<Encounter>> {
+    public async postEncounter(@Body() requestBody: EncounterCreationParams): Promise<SuccessResponseJSON<Encounter>> {
         this.setStatus(201)
         return { result: await this.service.createEncounter(requestBody) }
     }
