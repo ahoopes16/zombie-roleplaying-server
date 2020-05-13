@@ -1,9 +1,6 @@
 import { Context, Next, Middleware } from 'koa'
 import { isBoom } from '@hapi/boom'
-
-export interface ErrorResponseJSON {
-    error: string
-}
+import { ErrorResponseJSON } from '../types/Response.type'
 
 const errorHandler: Middleware = async (ctx: Context, next: Next) => {
     try {

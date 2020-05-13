@@ -1,8 +1,7 @@
 import { Body, Controller, Post, Path, Response, Route, SuccessResponse, Get } from 'tsoa'
 import { Encounter, EncounterCreationParams } from '../models/encounter.model'
 import { EncounterService } from '../services/encounter.service'
-import { ErrorResponseJSON } from '../middleware/error-handler.middleware'
-import { SuccessResponseJSON } from '../types/Response.type'
+import { SuccessResponseJSON, ErrorResponseJSON } from '../types/Response.type'
 
 @Route('encounters')
 export class EncounterController extends Controller {

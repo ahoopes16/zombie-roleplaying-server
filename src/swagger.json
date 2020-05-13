@@ -80,7 +80,8 @@
 			"ErrorResponseJSON": {
 				"properties": {
 					"error": {
-						"type": "string"
+						"type": "string",
+						"description": "A description of what went wrong."
 					}
 				},
 				"required": [
@@ -97,6 +98,19 @@
 				},
 				"required": [
 					"result"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"NotFoundJSON": {
+				"properties": {
+					"error": {
+						"type": "string",
+						"description": "A description of what went wrong."
+					}
+				},
+				"required": [
+					"error"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -244,7 +258,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ErrorResponseJSON"
+									"$ref": "#/components/schemas/NotFoundJSON"
 								}
 							}
 						},
