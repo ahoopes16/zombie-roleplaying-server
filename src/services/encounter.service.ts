@@ -9,6 +9,10 @@ export class EncounterService {
         this.model = model
     }
 
+    public listEncounters(): Promise<Encounter[]> {
+        return this.model.find().exec()
+    }
+
     public async createEncounter(encounterParams: EncounterCreationParams): Promise<Encounter> {
         const { title } = encounterParams
 

@@ -1,5 +1,6 @@
 import { EncounterService } from '../src/services/encounter.service'
-import EncounterModel, { EncounterCreationParams, Encounter } from '../src/models/encounter.model'
+import EncounterModel, { EncounterCreationParams } from '../src/models/encounter.model'
+import { createFakeEncounter } from './helpers/encounter.helper'
 import DBConnector from '../src/database'
 import env from '../src/environment'
 import * as mongoose from 'mongoose'
@@ -21,17 +22,30 @@ afterAll(async () => {
 
 const model = EncounterModel()
 
-const createFakeEncounter = (
-    title = `Title_${Math.random()}`,
-    description = `Desc_${Math.random()}`,
-): Promise<Encounter> => {
-    return model.create({
-        title,
-        description,
-    } as Encounter)
-}
-
 describe('encounter service', () => {
+    describe('listEncounters', () => {
+        test('happy path - returns list of encounters', async () => {
+            const service = new EncounterService()
+            const encounterOneParams: EncounterCreationParams = {
+                title: `Title_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+            }
+            const encounterTwoParams: EncounterCreationParams = {
+                title: `Title_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+            }
+            const encounterOne = await createFakeEncounter(model, encounterOneParams)
+            const encounterTwo = await createFakeEncounter(model, encounterTwoParams)
+
+            const actual = await service.listEncounters()
+
+            expect(actual).toBeDefined()
+            expect(actual.length).toBe(2)
+            expect(actual.find(encounter => encounter.title === encounterOne.title)).toBeTruthy()
+            expect(actual.find(encounter => encounter.title === encounterTwo.title)).toBeTruthy()
+        })
+    })
+
     describe('createEncounter', () => {
         test('happy path - returns created encounter', async () => {
             const expected: EncounterCreationParams = {
@@ -54,7 +68,7 @@ describe('encounter service', () => {
                 title: `Title_${Math.random()}`,
                 description: `Description_${Math.random()}`,
             }
-            await createFakeEncounter(encounterParams.title, encounterParams.description)
+            await createFakeEncounter(model, encounterParams)
             const errorMessage = `An encounter with the title "${encounterParams.title}" already exists.`
             const expectedError = Boom.badRequest(errorMessage)
 
