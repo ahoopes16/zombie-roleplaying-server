@@ -1,5 +1,5 @@
 import { EncounterService } from '../src/services/encounter.service'
-import EncounterModel, { EncounterCreationParams } from '../src/models/encounter.model'
+import EncounterModel, { EncounterCreationParams, EncounterPatchParams } from '../src/models/encounter.model'
 import { createFakeEncounter } from './helpers/encounter.helper'
 import DBConnector from '../src/database'
 import env from '../src/environment'
@@ -115,6 +115,73 @@ describe('encounter service', () => {
             const service = new EncounterService()
 
             await expect(service.createEncounter(encounterParams)).rejects.toThrow(expectedError)
+        })
+    })
+
+    describe('partiallyUpdateEncounter', () => {
+        test('happy path - returns updated encounter', async () => {
+            const encounterParams: EncounterCreationParams = {
+                title: `Title_${Math.random()}`,
+                description: `Desc_${Math.random()}`,
+            }
+            const original = await createFakeEncounter(model, encounterParams)
+            const service = new EncounterService()
+            const updateParams: EncounterPatchParams = {
+                description: `Desc_${Math.random()}`,
+            }
+
+            const updated = await service.partiallyUpdateEncounter(original._id, updateParams)
+
+            expect(updated._id).toStrictEqual(original._id)
+            expect(updated.title).toBe(original.title)
+            expect(updated.description).toBe(updateParams.description)
+        })
+
+        test('throws a BadRequest error when given an invalid Mongo ID', async () => {
+            const invalidId = `invalid-id-${Math.random()}`
+            const service = new EncounterService()
+            const updateParams: EncounterPatchParams = {
+                description: `Desc_${Math.random()}`,
+            }
+            const errorMessage = `Invalid encounter ID. Please give a valid Mongo ObjectID. Received "${invalidId}".`
+            const expectedError = Boom.badRequest(errorMessage)
+
+            await expect(service.partiallyUpdateEncounter(invalidId, updateParams)).rejects.toThrow(expectedError)
+        })
+
+        test('throws a NotFound error when given a valid Mongo ID that does not exist', async () => {
+            const id = new ObjectId().toString()
+            const service = new EncounterService()
+            const updateParams: EncounterPatchParams = {
+                description: `Desc_${Math.random()}`,
+            }
+            const errorMessage = `Encounter with ID "${id}" not found.`
+            const expectedError = Boom.notFound(errorMessage)
+
+            await expect(service.partiallyUpdateEncounter(id, updateParams)).rejects.toThrow(expectedError)
+        })
+
+        test('throws a BadRequest error when given a title that already exists in the database', async () => {
+            const encounterOneParams: EncounterCreationParams = {
+                title: `Title_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+            }
+            const encounterTwoParams: EncounterCreationParams = {
+                title: `Title_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+            }
+            const encounterOne = await createFakeEncounter(model, encounterOneParams)
+            const encounterTwo = await createFakeEncounter(model, encounterTwoParams)
+            const updateEncounterParams: EncounterPatchParams = {
+                title: encounterOne.title,
+            }
+            const errorMessage = `An encounter with the title "${encounterOneParams.title}" already exists.`
+            const expectedError = Boom.badRequest(errorMessage)
+            const service = new EncounterService()
+
+            await expect(service.partiallyUpdateEncounter(encounterTwo._id, updateEncounterParams)).rejects.toThrow(
+                expectedError,
+            )
         })
     })
 })

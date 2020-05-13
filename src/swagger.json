@@ -102,19 +102,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"NotFoundJSON": {
-				"properties": {
-					"error": {
-						"type": "string",
-						"description": "A description of what went wrong."
-					}
-				},
-				"required": [
-					"error"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"Pick_Encounter.title-or-description-or-actions_": {
 				"properties": {
 					"title": {
@@ -147,6 +134,35 @@
 			},
 			"EncounterCreationParams": {
 				"$ref": "#/components/schemas/Pick_Encounter.title-or-description-or-actions_"
+			},
+			"Partial_EncounterCreationParams_": {
+				"properties": {
+					"title": {
+						"type": "string",
+						"description": "A fun title for the encounter.",
+						"example": "A Zombie Grabs Your Leg!"
+					},
+					"description": {
+						"type": "string",
+						"description": "Some text describing what happens in this encounter.",
+						"example": "You can tell from here that it has terrible breath."
+					},
+					"actions": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array",
+						"description": "A list of actions the user can take when they hit this encounter.",
+						"example": [
+							"Attempt to kick it away!"
+						]
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"EncounterPatchParams": {
+				"$ref": "#/components/schemas/Partial_EncounterCreationParams_"
 			}
 		},
 		"securitySchemes": {}
@@ -258,7 +274,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/NotFoundJSON"
+									"$ref": "#/components/schemas/ErrorResponseJSON"
 								}
 							}
 						},
@@ -288,6 +304,65 @@
 						}
 					}
 				]
+			},
+			"patch": {
+				"operationId": "PatchEncounter",
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponseJSON_Encounter_"
+								}
+							}
+						},
+						"description": "Successfully Updated"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponseJSON"
+								}
+							}
+						},
+						"description": "Validation Failed"
+					},
+					"404": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponseJSON"
+								}
+							}
+						},
+						"description": "Encounter Not Found"
+					}
+				},
+				"description": "Partially updates an encounter.\r\nProvide only the fields you want to update,\r\nthe rest will remain the same.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Mongo ObjectID of the desired encounter",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Fields and values to update on the encounter",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/EncounterPatchParams"
+							}
+						}
+					}
+				}
 			}
 		}
 	},

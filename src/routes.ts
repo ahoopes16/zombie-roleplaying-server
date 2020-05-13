@@ -47,14 +47,6 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "NotFoundJSON": {
-        "dataType": "refObject",
-        "properties": {
-            "error": { "dataType": "string", "required": true },
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Pick_Encounter.title-or-description-or-actions_": {
         "dataType": "refAlias",
         "type": { "dataType": "nestedObjectLiteral", "nestedProperties": { "title": { "dataType": "string", "required": true }, "description": { "dataType": "string", "required": true }, "actions": { "dataType": "array", "array": { "dataType": "string" } } }, "validators": {} },
@@ -63,6 +55,16 @@ const models: TsoaRoute.Models = {
     "EncounterCreationParams": {
         "dataType": "refAlias",
         "type": { "ref": "Pick_Encounter.title-or-description-or-actions_", "validators": {} },
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Partial_EncounterCreationParams_": {
+        "dataType": "refAlias",
+        "type": { "dataType": "nestedObjectLiteral", "nestedProperties": { "title": { "dataType": "string" }, "description": { "dataType": "string" }, "actions": { "dataType": "array", "array": { "dataType": "string" } } }, "validators": {} },
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "EncounterPatchParams": {
+        "dataType": "refAlias",
+        "type": { "ref": "Partial_EncounterCreationParams_", "validators": {} },
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
@@ -131,6 +133,27 @@ export function RegisterRoutes(router: KoaRouter) {
             const controller = new EncounterController();
 
             const promise = controller.postEncounter.apply(controller, validatedArgs as any);
+            return promiseHandler(controller, promise, context, next);
+        });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    router.patch('/v1/encounters/:id',
+        async (context: any, next: any) => {
+            const args = {
+                id: { "in": "path", "name": "id", "required": true, "dataType": "string" },
+                requestBody: { "in": "body", "name": "requestBody", "required": true, "ref": "EncounterPatchParams" },
+            };
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, context);
+            } catch (error) {
+                context.status = error.status;
+                context.throw(error.status, JSON.stringify({ fields: error.fields }));
+            }
+
+            const controller = new EncounterController();
+
+            const promise = controller.patchEncounter.apply(controller, validatedArgs as any);
             return promiseHandler(controller, promise, context, next);
         });
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

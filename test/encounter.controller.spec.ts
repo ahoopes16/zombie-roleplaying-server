@@ -1,5 +1,5 @@
 import { EncounterController } from '../src/controllers/encounter.controller'
-import EncounterModel, { EncounterCreationParams } from '../src/models/encounter.model'
+import EncounterModel, { EncounterCreationParams, EncounterPatchParams } from '../src/models/encounter.model'
 import { createFakeEncounter } from './helpers/encounter.helper'
 import DBConnector from '../src/database'
 import env from '../src/environment'
@@ -86,6 +86,27 @@ describe('encounter controller', () => {
             expect(actual.result.description).toBe(expected.description)
             expect(actual.result.actions).toBeDefined()
             expect(actual.result.actions.length).toBe(0)
+        })
+    })
+
+    describe('patchEncounter', () => {
+        test('happy path - returns updated encounter inside result', async () => {
+            const originalParams: EncounterCreationParams = {
+                title: `Title_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+            }
+            const original = await createFakeEncounter(model, originalParams)
+            const updateParams: EncounterPatchParams = {
+                description: `Description_${Math.random()}`,
+            }
+            const controller = new EncounterController()
+
+            const updated = await controller.patchEncounter(original._id, updateParams)
+
+            expect(updated.result).toBeDefined
+            expect(updated.result.title).toBe(original.title)
+            expect(updated.result.description).toBe(updateParams.description)
+            expect(updated.result.description).not.toBe(original.description)
         })
     })
 })

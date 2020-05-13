@@ -42,6 +42,7 @@ export interface Encounter {
 }
 
 export type EncounterCreationParams = Pick<Encounter, 'title' | 'description' | 'actions'>
+export type EncounterPatchParams = Partial<EncounterCreationParams>
 
 const encounterSchema = new Schema(
     {
