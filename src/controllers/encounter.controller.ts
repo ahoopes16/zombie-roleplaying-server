@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Patch, Path, Response, Route, SuccessResponse, Get, Delete } from 'tsoa'
+import { Body, Controller, Post, Patch, Path, Response, Route, SuccessResponse, Get, Delete, Put } from 'tsoa'
 import { Encounter, EncounterCreationParams, EncounterPatchParams } from '../models/encounter.model'
 import { EncounterService } from '../services/encounter.service'
 import { SuccessResponseJSON, ErrorResponseJSON } from '../types/Response.type'
@@ -72,6 +72,25 @@ export class EncounterController extends Controller {
     ): Promise<SuccessResponseJSON<Encounter>> {
         this.setStatus(200)
         return { result: await this.service.partiallyUpdateEncounter(id, requestBody) }
+    }
+
+    /**
+     * Replace/create an encounter.
+     * If the ID exists in the database, replace it with the given encounter.
+     * If the ID does not exist but is valid, create it.
+     * @param id Mongo ObjectID of the desired encounter
+     * @param requestBody Fields and values to update on the encounter. Must be a complete encounter record.
+     */
+    @SuccessResponse(200, 'Successfully Updated')
+    @Response<ErrorResponseJSON>(400, 'Validation Failed')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
+    @Put('{id}')
+    public async putEncounter(
+        @Path() id: string,
+        @Body() requestBody: Encounter,
+    ): Promise<SuccessResponseJSON<Encounter>> {
+        this.setStatus(200)
+        return { result: await this.service.replaceEncounter(id, requestBody) }
     }
 
     /**

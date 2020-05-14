@@ -1,5 +1,6 @@
-import { Model, Document, isValidObjectId } from 'mongoose'
 import EncounterModel, { Encounter, EncounterCreationParams, EncounterPatchParams } from '../models/encounter.model'
+import { Model, Document, isValidObjectId } from 'mongoose'
+import { ObjectId } from 'mongodb'
 import * as Boom from '@hapi/boom'
 
 export class EncounterService {
@@ -36,6 +37,17 @@ export class EncounterService {
         return encounter.save()
     }
 
+    public async replaceEncounter(_id: string, newEncounter: Encounter): Promise<Encounter & Document> {
+        this.validateMongoID(_id)
+        await this.validateTitleDoesNotExist(newEncounter)
+
+        return this.model.findOneAndUpdate({ _id }, newEncounter, {
+            upsert: true,
+            new: true,
+            setDefaultsOnInsert: true,
+        })
+    }
+
     public async deleteEncounter(_id: string): Promise<Encounter & Document> {
         this.validateMongoID(_id)
         await this.validateEncounterExists(_id)
@@ -57,7 +69,9 @@ export class EncounterService {
         }
     }
 
-    private async validateTitleDoesNotExist(params: EncounterCreationParams | EncounterPatchParams): Promise<void> {
+    private async validateTitleDoesNotExist(
+        params: EncounterCreationParams | EncounterPatchParams | Encounter,
+    ): Promise<void> {
         const { title } = params
 
         if (!title) {

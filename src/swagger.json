@@ -38,17 +38,20 @@
 					"createdAt": {
 						"type": "string",
 						"format": "date-time",
-						"description": "The date this document was created. Created by Mongoose."
+						"description": "The date this document was created. Created by Mongoose.",
+						"example": "2020-01-01T00:00:00.000Z"
 					},
 					"updatedAt": {
 						"type": "string",
 						"format": "date-time",
-						"description": "The last date this document was updated. Created by Mongoose."
+						"description": "The last date this document was updated. Created by Mongoose.",
+						"example": "2020-01-01T00:00:00.000Z"
 					},
 					"__v": {
 						"type": "number",
 						"format": "double",
-						"description": "The version number for this document. Created by Mongoose."
+						"description": "The version number for this document. Created by Mongoose.",
+						"example": 1
 					}
 				},
 				"required": [
@@ -228,9 +231,19 @@
 							}
 						},
 						"description": "Validation Failed"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponseJSON"
+								}
+							}
+						},
+						"description": "Internal Server Error"
 					}
 				},
-				"description": "Creates an encounter.\r\nSupply the title, description, and actions optionally.\r\nThe title must be unique, or else you will receive an error.",
+				"description": "Creates an encounter.\r\nSupply the title, description, and actions optionally.\r\nThe title must be unique, or else you will receive an error.\r\nReturns the created encounter.",
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -337,9 +350,19 @@
 							}
 						},
 						"description": "Encounter Not Found"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponseJSON"
+								}
+							}
+						},
+						"description": "Internal Server Error"
 					}
 				},
-				"description": "Partially updates an encounter.\r\nProvide only the fields you want to update,\r\nthe rest will remain the same.",
+				"description": "Partially updates an encounter.\r\nProvide only the fields you want to update, the rest will remain the same.\r\nReturns the updated encounter.",
 				"security": [],
 				"parameters": [
 					{
@@ -363,6 +386,123 @@
 						}
 					}
 				}
+			},
+			"put": {
+				"operationId": "PutEncounter",
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponseJSON_Encounter_"
+								}
+							}
+						},
+						"description": "Successfully Updated"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponseJSON"
+								}
+							}
+						},
+						"description": "Validation Failed"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponseJSON"
+								}
+							}
+						},
+						"description": "Internal Server Error"
+					}
+				},
+				"description": "Replace/create an encounter.\r\nIf the ID exists in the database, replace it with the given encounter.\r\nIf the ID does not exist but is valid, create it.",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Mongo ObjectID of the desired encounter",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "Fields and values to update on the encounter. Must be a complete encounter record.",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Encounter"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteEncounter",
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SuccessResponseJSON_Encounter_"
+								}
+							}
+						},
+						"description": "Successfully Deleted"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponseJSON"
+								}
+							}
+						},
+						"description": "Validation Failed"
+					},
+					"404": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponseJSON"
+								}
+							}
+						},
+						"description": "Encounter Not Found"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponseJSON"
+								}
+							}
+						},
+						"description": "Internal Server Error"
+					}
+				},
+				"description": "Delete a given encounter from the database.\r\nIt will be removed permanently - you won't be able to get it back!",
+				"security": [],
+				"parameters": [
+					{
+						"description": "Mongo ObjectID of the desired encounter",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		}
 	},

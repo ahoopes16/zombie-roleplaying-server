@@ -31,13 +31,22 @@ export interface Encounter {
      */
     numberOfRuns: number
 
-    /** The date this document was created. Created by Mongoose. */
+    /**
+     * The date this document was created. Created by Mongoose.
+     * @example "2020-01-01T00:00:00.000Z"
+     */
     createdAt: Date
 
-    /** The last date this document was updated. Created by Mongoose. */
+    /**
+     * The last date this document was updated. Created by Mongoose.
+     * @example "2020-01-01T00:00:00.000Z"
+     */
     updatedAt: Date
 
-    /** The version number for this document. Created by Mongoose. */
+    /**
+     * The version number for this document. Created by Mongoose.
+     * @example 1
+     */
     __v: number
 }
 

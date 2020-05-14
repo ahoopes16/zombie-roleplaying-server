@@ -1,6 +1,7 @@
 import { EncounterController } from '../src/controllers/encounter.controller'
-import EncounterModel, { EncounterCreationParams, EncounterPatchParams } from '../src/models/encounter.model'
+import EncounterModel, { EncounterCreationParams, EncounterPatchParams, Encounter } from '../src/models/encounter.model'
 import { createFakeEncounter } from './helpers/encounter.helper'
+import { ObjectId } from 'mongodb'
 import DBConnector from '../src/database'
 import env from '../src/environment'
 import * as mongoose from 'mongoose'
@@ -108,6 +109,54 @@ describe('encounter controller', () => {
             expect(updated.result.title).toBe(original.title)
             expect(updated.result.description).toBe(updateParams.description)
             expect(updated.result.description).not.toBe(original.description)
+        })
+    })
+
+    describe('putEncounter', () => {
+        test('returns updated encounter inside result', async () => {
+            const originalParams: EncounterCreationParams = {
+                title: `Title_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+            }
+            const original = await createFakeEncounter(model, originalParams)
+            const updateParams: Encounter = {
+                title: `Title_${Math.random()}`,
+                description: `Desc_${Math.random()}`,
+                actions: [],
+                numberOfRuns: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                __v: 2,
+            }
+            const controller = new EncounterController()
+
+            const updated = await controller.putEncounter(original._id, updateParams)
+
+            expect(updated.result).toBeDefined
+            expect(updated.result.title).toBe(updateParams.title)
+            expect(updated.result.title).not.toBe(original.title)
+            expect(updated.result.description).toBe(updateParams.description)
+            expect(updated.result.description).not.toBe(original.description)
+        })
+
+        test('returns created encounter inside result', async () => {
+            const id = new ObjectId().toString()
+            const updateParams: Encounter = {
+                title: `Title_${Math.random()}`,
+                description: `Desc_${Math.random()}`,
+                actions: [],
+                numberOfRuns: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                __v: 2,
+            }
+            const controller = new EncounterController()
+
+            const updated = await controller.putEncounter(id, updateParams)
+
+            expect(updated.result).toBeDefined
+            expect(updated.result.title).toBe(updateParams.title)
+            expect(updated.result.description).toBe(updateParams.description)
         })
     })
 
