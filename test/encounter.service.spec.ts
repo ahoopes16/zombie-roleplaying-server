@@ -24,6 +24,18 @@ afterAll(async () => {
 
 const model = EncounterModel()
 
+const notFoundError = (id: string): Boom.Boom => {
+    return Boom.notFound(`Encounter with ID "${id}" not found.`)
+}
+
+const invalidMongoIDError = (id: string): Boom.Boom => {
+    return Boom.badRequest(`Invalid encounter ID. Please give a valid Mongo ObjectID. Received "${id}".`)
+}
+
+const titleExistsError = (title: string): Boom.Boom => {
+    return Boom.badRequest(`An encounter with the title "${title}" already exists.`)
+}
+
 describe('encounter service', () => {
     describe('listEncounters', () => {
         test('happy path - returns list of encounters', async () => {
@@ -68,8 +80,7 @@ describe('encounter service', () => {
 
         test('throws a BadRequest error when given an invalid Mongo ID', async () => {
             const invalidId = `invalid-id-${Math.random()}`
-            const errorMessage = `Invalid encounter ID. Please give a valid Mongo ObjectID. Received "${invalidId}".`
-            const expectedError = Boom.badRequest(errorMessage)
+            const expectedError = invalidMongoIDError(invalidId)
 
             const service = new EncounterService()
 
@@ -78,8 +89,7 @@ describe('encounter service', () => {
 
         test('throws a NotFound error when given a valid Mongo ID that does not exist', async () => {
             const mongoId = new ObjectId().toString()
-            const errorMessage = `Encounter with ID "${mongoId}" not found.`
-            const expectedError = Boom.notFound(errorMessage)
+            const expectedError = notFoundError(mongoId)
 
             const service = new EncounterService()
 
@@ -110,8 +120,7 @@ describe('encounter service', () => {
                 description: `Description_${Math.random()}`,
             }
             await createFakeEncounter(model, encounterParams)
-            const errorMessage = `An encounter with the title "${encounterParams.title}" already exists.`
-            const expectedError = Boom.badRequest(errorMessage)
+            const expectedError = titleExistsError(encounterParams.title)
 
             const service = new EncounterService()
 
@@ -144,8 +153,7 @@ describe('encounter service', () => {
             const updateParams: EncounterPatchParams = {
                 description: `Desc_${Math.random()}`,
             }
-            const errorMessage = `Invalid encounter ID. Please give a valid Mongo ObjectID. Received "${invalidId}".`
-            const expectedError = Boom.badRequest(errorMessage)
+            const expectedError = invalidMongoIDError(invalidId)
 
             await expect(service.partiallyUpdateEncounter(invalidId, updateParams)).rejects.toThrow(expectedError)
         })
@@ -156,8 +164,7 @@ describe('encounter service', () => {
             const updateParams: EncounterPatchParams = {
                 description: `Desc_${Math.random()}`,
             }
-            const errorMessage = `Encounter with ID "${id}" not found.`
-            const expectedError = Boom.notFound(errorMessage)
+            const expectedError = notFoundError(id)
 
             await expect(service.partiallyUpdateEncounter(id, updateParams)).rejects.toThrow(expectedError)
         })
@@ -176,8 +183,7 @@ describe('encounter service', () => {
             const updateEncounterParams: EncounterPatchParams = {
                 title: encounterOne.title,
             }
-            const errorMessage = `An encounter with the title "${encounterOneParams.title}" already exists.`
-            const expectedError = Boom.badRequest(errorMessage)
+            const expectedError = titleExistsError(encounterOneParams.title)
             const service = new EncounterService()
 
             await expect(service.partiallyUpdateEncounter(encounterTwo._id, updateEncounterParams)).rejects.toThrow(
@@ -207,7 +213,6 @@ describe('encounter service', () => {
                 title: `Title_${Math.random()}`,
                 description: `Description_${Math.random()}`,
             }
-
             const expected = await createFakeEncounter(model, encounterParams)
 
             const actual = await service.deleteEncounter(expected._id)
@@ -221,17 +226,14 @@ describe('encounter service', () => {
         test('throws a BadRequest error when given an invalid Mongo ID', async () => {
             const invalidId = `invalid-id-${Math.random()}`
             const service = new EncounterService()
-            const errorMessage = `Invalid encounter ID. Please give a valid Mongo ObjectID. Received "${invalidId}".`
-            const expectedError = Boom.badRequest(errorMessage)
+            const expectedError = invalidMongoIDError(invalidId)
 
             await expect(service.deleteEncounter(invalidId)).rejects.toThrow(expectedError)
         })
 
         test('throws a NotFound error when given a valid Mongo ID that does not exist', async () => {
             const mongoId = new ObjectId().toString()
-            const errorMessage = `Encounter with ID "${mongoId}" not found.`
-            const expectedError = Boom.notFound(errorMessage)
-
+            const expectedError = notFoundError(mongoId)
             const service = new EncounterService()
 
             await expect(service.deleteEncounter(mongoId)).rejects.toThrow(expectedError)
