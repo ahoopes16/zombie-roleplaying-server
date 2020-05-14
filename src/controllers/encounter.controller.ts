@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Patch, Path, Response, Route, SuccessResponse, Get } from 'tsoa'
+import { Body, Controller, Post, Patch, Path, Response, Route, SuccessResponse, Get, Delete } from 'tsoa'
 import { Encounter, EncounterCreationParams, EncounterPatchParams } from '../models/encounter.model'
 import { EncounterService } from '../services/encounter.service'
 import { SuccessResponseJSON, ErrorResponseJSON } from '../types/Response.type'
@@ -42,10 +42,12 @@ export class EncounterController extends Controller {
      * Creates an encounter.
      * Supply the title, description, and actions optionally.
      * The title must be unique, or else you will receive an error.
+     * Returns the created encounter.
      * @param requestBody A JSON body containing the title, description, and optionally a list of actions.
      */
     @SuccessResponse(201, 'Successfully Created')
     @Response<ErrorResponseJSON>(400, 'Validation Failed')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
     @Post()
     public async postEncounter(@Body() requestBody: EncounterCreationParams): Promise<SuccessResponseJSON<Encounter>> {
         this.setStatus(201)
@@ -54,14 +56,15 @@ export class EncounterController extends Controller {
 
     /**
      * Partially updates an encounter.
-     * Provide only the fields you want to update,
-     * the rest will remain the same.
+     * Provide only the fields you want to update, the rest will remain the same.
+     * Returns the updated encounter.
      * @param id Mongo ObjectID of the desired encounter
      * @param requestBody Fields and values to update on the encounter
      */
     @SuccessResponse(200, 'Successfully Updated')
     @Response<ErrorResponseJSON>(400, 'Validation Failed')
     @Response<ErrorResponseJSON>(404, 'Encounter Not Found')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
     @Patch('{id}')
     public async patchEncounter(
         @Path() id: string,
@@ -69,5 +72,20 @@ export class EncounterController extends Controller {
     ): Promise<SuccessResponseJSON<Encounter>> {
         this.setStatus(200)
         return { result: await this.service.partiallyUpdateEncounter(id, requestBody) }
+    }
+
+    /**
+     * Delete a given encounter from the database.
+     * It will be removed permanently - you won't be able to get it back!
+     * @param id Mongo ObjectID of the desired encounter
+     */
+    @SuccessResponse(200, 'Successfully Deleted')
+    @Response<ErrorResponseJSON>(400, 'Validation Failed')
+    @Response<ErrorResponseJSON>(404, 'Encounter Not Found')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
+    @Delete('{id}')
+    public async deleteEncounter(@Path() id: string): Promise<SuccessResponseJSON<Encounter>> {
+        this.setStatus(200)
+        return { result: await this.service.deleteEncounter(id) }
     }
 }

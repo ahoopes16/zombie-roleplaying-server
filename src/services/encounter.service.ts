@@ -36,8 +36,14 @@ export class EncounterService {
         return encounter.save()
     }
 
+    public async deleteEncounter(_id: string): Promise<Encounter & Document> {
+        this.validateMongoID(_id)
+        await this.validateEncounterExists(_id)
+        return this.model.findByIdAndRemove(_id)
+    }
+
     private async validateEncounterExists(_id: string): Promise<Encounter & Document> {
-        const encounter = await this.model.findOne({ _id }).exec()
+        const encounter = await this.model.findById(_id).exec()
         if (!encounter) {
             throw Boom.notFound(`Encounter with ID "${_id}" not found.`)
         }

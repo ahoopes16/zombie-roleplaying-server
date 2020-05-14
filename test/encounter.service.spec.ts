@@ -10,6 +10,7 @@ import * as Boom from '@hapi/boom'
 beforeAll(async () => {
     const url = new DBConnector().setDB(env.mongo.testDb).buildMongoURL()
     mongoose.set('useCreateIndex', true)
+    mongoose.set('useFindAndModify', false)
     await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 })
 
@@ -182,6 +183,58 @@ describe('encounter service', () => {
             await expect(service.partiallyUpdateEncounter(encounterTwo._id, updateEncounterParams)).rejects.toThrow(
                 expectedError,
             )
+        })
+    })
+
+    describe('deleteEncounter', () => {
+        test('happy path - removes encounter from database', async () => {
+            const service = new EncounterService()
+            const encounterParams: EncounterCreationParams = {
+                title: `Title_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+            }
+
+            const expected = await createFakeEncounter(model, encounterParams)
+            const actual = await service.deleteEncounter(expected._id)
+            const afterRemoval = await model.findById(actual._id)
+
+            expect(afterRemoval).toBeFalsy()
+        })
+
+        test('happy path - returns deleted encounter', async () => {
+            const service = new EncounterService()
+            const encounterParams: EncounterCreationParams = {
+                title: `Title_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+            }
+
+            const expected = await createFakeEncounter(model, encounterParams)
+
+            const actual = await service.deleteEncounter(expected._id)
+
+            expect(actual).toBeTruthy()
+            expect(actual._id).toStrictEqual(expected._id)
+            expect(actual.title).toBe(expected.title)
+            expect(actual.description).toBe(expected.description)
+        })
+
+        test('throws a BadRequest error when given an invalid Mongo ID', async () => {
+            const invalidId = `invalid-id-${Math.random()}`
+            const service = new EncounterService()
+            const errorMessage = `Invalid encounter ID. Please give a valid Mongo ObjectID. Received "${invalidId}".`
+            const expectedError = Boom.badRequest(errorMessage)
+
+            await expect(service.deleteEncounter(invalidId)).rejects.toThrow(expectedError)
+        })
+
+        test('throws a NotFound error when given a valid Mongo ID that does not exist', async () => {
+            const mongoId = new ObjectId().toString()
+            const errorMessage = `Encounter with ID "${mongoId}" not found.`
+            const expectedError = Boom.notFound(errorMessage)
+
+            const service = new EncounterService()
+
+            await expect(service.deleteEncounter(mongoId)).rejects.toThrow(expectedError)
         })
     })
 })

@@ -8,6 +8,7 @@ import * as mongoose from 'mongoose'
 beforeAll(async () => {
     const url = new DBConnector().setDB(env.mongo.testDb).buildMongoURL()
     mongoose.set('useCreateIndex', true)
+    mongoose.set('useFindAndModify', false)
     await mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 })
 
@@ -23,7 +24,7 @@ const model = EncounterModel()
 
 describe('encounter controller', () => {
     describe('getEncounters', () => {
-        test('happy path - returns empty array if there are no encounters', async () => {
+        test('returns empty array if there are no encounters', async () => {
             const controller = new EncounterController()
 
             const actual = await controller.getEncounters()
@@ -32,7 +33,7 @@ describe('encounter controller', () => {
             expect(actual.result.length).toBe(0)
         })
 
-        test('happy path - returns array of encounters inside result', async () => {
+        test('returns array of encounters inside result', async () => {
             const controller = new EncounterController()
             const encounterOneParams: EncounterCreationParams = {
                 title: `Title_${Math.random()}`,
@@ -55,7 +56,7 @@ describe('encounter controller', () => {
     })
 
     describe('getEncounter', () => {
-        test('happy path - returns desired encounter', async () => {
+        test('returns desired encounter', async () => {
             const controller = new EncounterController()
             const encounterParams: EncounterCreationParams = {
                 title: `Title_${Math.random()}`,
@@ -72,7 +73,7 @@ describe('encounter controller', () => {
     })
 
     describe('postEncounter', () => {
-        test('happy path - returns created encounter inside result', async () => {
+        test('returns created encounter inside result', async () => {
             const expected: EncounterCreationParams = {
                 title: `Title_${Math.random()}`,
                 description: `Description_${Math.random()}`,
@@ -90,7 +91,7 @@ describe('encounter controller', () => {
     })
 
     describe('patchEncounter', () => {
-        test('happy path - returns updated encounter inside result', async () => {
+        test('returns updated encounter inside result', async () => {
             const originalParams: EncounterCreationParams = {
                 title: `Title_${Math.random()}`,
                 description: `Description_${Math.random()}`,
@@ -107,6 +108,23 @@ describe('encounter controller', () => {
             expect(updated.result.title).toBe(original.title)
             expect(updated.result.description).toBe(updateParams.description)
             expect(updated.result.description).not.toBe(original.description)
+        })
+    })
+
+    describe('deleteEncounter', () => {
+        test('returns deleted encounter inside result', async () => {
+            const controller = new EncounterController()
+            const encounterParams: EncounterCreationParams = {
+                title: `Title_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+            }
+            const expected = await createFakeEncounter(model, encounterParams)
+
+            const actual = await controller.deleteEncounter(expected._id)
+
+            expect(actual.result).toBeDefined()
+            expect(actual.result.title).toBe(expected.title)
+            expect(actual.result.description).toBe(expected.description)
         })
     })
 })
