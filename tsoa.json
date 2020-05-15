@@ -5,7 +5,7 @@
     "controllerPathGlobs": ["src/**/*controller.ts"],
     "spec": {
         "name": "Zombie RPG 3000",
-        "outputDirectory": "src",
+        "outputDirectory": "tsoa",
         "specVersion": 3,
         "basePath": "/v1",
         "host": "localhost:8000",
@@ -13,7 +13,7 @@
     },
     "routes": {
         "basePath": "/v1",
-        "routesDir": "src",
+        "routesDir": "tsoa",
         "middleware": "koa"
     }
 }

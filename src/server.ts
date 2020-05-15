@@ -7,7 +7,7 @@ import * as KoaLogger from 'koa-logger-winston'
 import logger from './util/logger.util'
 import DBConnector from './database'
 import env from './environment'
-import { RegisterRoutes } from './routes'
+import { RegisterRoutes } from '../tsoa/routes'
 
 async function runServer(): Promise<void> {
     await new DBConnector().connect()
