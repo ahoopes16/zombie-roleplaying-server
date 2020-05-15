@@ -52,7 +52,7 @@ export interface Weapon {
      * The version number for this document. Created by Mongoose.
      * @example 1
      */
-    __v: number
+    __v: bigint
 }
 
 const weaponSchema = new Schema(
