@@ -1,121 +1,110 @@
-import * as Koa from 'koa'
-import { Model, isValidObjectId } from 'mongoose'
-import EncounterModel, { Encounter } from '../models/encounter.model'
+import { Body, Controller, Post, Patch, Path, Response, Route, SuccessResponse, Get, Delete, Put } from 'tsoa'
+import { Encounter, EncounterCreationParams, EncounterPatchParams } from '../models/encounter.model'
+import { EncounterService } from '../services/encounter.service'
+import { SuccessResponseJSON, ErrorResponseJSON } from '../types/Response.type'
 
-export class EncounterController {
-    private model: Model<Encounter>
+@Route('encounters')
+export class EncounterController extends Controller {
+    private service: EncounterService
 
-    constructor(model = EncounterModel()) {
-        this.model = model
-    }
-
-    /** Retrieve a list of all encounter documents */
-    public getEncounters: Koa.Middleware = async ctx => {
-        // TODO Add pagination/result limits
-        ctx.status = 200
-        ctx.body = { result: await this.model.find().exec() }
-    }
-
-    /** Create a new encounter document */
-    public createEncounter: Koa.Middleware = async ctx => {
-        const encounter = ctx.request.body
-        await this.validateEncounterRequestBody(encounter, ctx)
-
-        // TODO Maybe extract this to a service?
-        const encounterWithSameTitle = Boolean(await this.model.findOne({ title: encounter.title }).exec())
-        ctx.assert(!encounterWithSameTitle, 400, `An encounter with the title ${encounter.title} already exists.`)
-
-        ctx.status = 201
-        ctx.body = { result: await this.model.create(encounter) }
-    }
-
-    /** Inspect a specific encounter document by providing the Mongo ID */
-    public inspectEncounter: Koa.Middleware = async ctx => {
-        const { id } = ctx.params
-        ctx.assert(isValidObjectId(id), 404, `ID must be a valid Mongo ObjectID. Received ${id}`)
-
-        const encounter = await this.model.findById(id)
-        ctx.assert(Boolean(encounter), 404, `No encounter found with ID ${id}`)
-
-        ctx.status = 200
-        ctx.body = { result: encounter }
+    constructor(service = new EncounterService()) {
+        super()
+        this.service = service
     }
 
     /**
-     * Update an encounter with the given Mongo ID. Must provide full object definition.
-     * Will create the given document if it does not exist.
+     * Get a list of all encounters.
+     * Currently there is no pagination or limits implemented.
      */
-    public updateEncounter: Koa.Middleware = async ctx => {
-        const _id = ctx.params.id
-        const encounter = ctx.request.body
-        ctx.assert(isValidObjectId(_id), 404, `ID must be a valid Mongo ObjectID. Received ${_id}`)
-        await this.validateEncounterRequestBody(encounter, ctx)
-
-        const foundEncounter = await this.model.findById(_id)
-
-        if (foundEncounter) {
-            foundEncounter.overwrite(encounter)
-            await foundEncounter.save()
-            ctx.status = 200
-        } else {
-            const encounterWithSameTitle = Boolean(await this.model.findOne({ title: encounter.title }).exec())
-            ctx.assert(!encounterWithSameTitle, 400, `An encounter with the title ${encounter.title} already exists.`)
-
-            await this.model.create({ _id, ...encounter })
-            ctx.status = 201
-        }
-
-        ctx.body = { result: await this.model.findById(_id) }
+    @SuccessResponse(200, 'Success')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
+    @Get()
+    public async getEncounters(): Promise<SuccessResponseJSON<Encounter[]>> {
+        this.setStatus(200)
+        return { result: await this.service.listEncounters() }
     }
 
-    /** Patch an encounter with the given Mongo ID. Only provide the values that you want to be changed */
-    public patchEncounter: Koa.Middleware = async ctx => {
-        const { id } = ctx.params
-        const encounter = ctx.request.body
-        ctx.assert(isValidObjectId(id), 404, `ID must be a valid Mongo ObjectID. Received ${id}`)
-
-        const foundEncounter = await this.model.findById(id)
-        ctx.assert(Boolean(foundEncounter), 404, `No encounter found with ID ${id}`)
-
-        if (encounter.title) {
-            const encounterWithSameTitle = Boolean(await this.model.findOne({ title: encounter.title }).exec())
-            ctx.assert(!encounterWithSameTitle, 400, `An encounter with the title ${encounter.title} already exists.`)
-        }
-
-        foundEncounter.set(ctx.request.body)
-
-        ctx.status = 200
-        ctx.body = { result: await foundEncounter.save() }
+    /**
+     * Get a specific encounter by Mongo ID.
+     * @param id Mongo ObjectID of the desired encounter
+     */
+    @SuccessResponse(200, 'Success')
+    @Response<ErrorResponseJSON>(400, 'Validation Failed')
+    @Response<ErrorResponseJSON>(404, 'Encounter Not Found')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
+    @Get('{id}')
+    public async getEncounter(@Path() id: string): Promise<SuccessResponseJSON<Encounter>> {
+        this.setStatus(200)
+        return { result: await this.service.inspectEncounter(id) }
     }
 
-    /** Delete an encounter document with the given Mongo ID */
-    public deleteEncounter: Koa.Middleware = async ctx => {
-        const { id } = ctx.params
-        ctx.assert(isValidObjectId(id), 404, `ID must be a valid Mongo ObjectID. Received ${id}`)
-
-        const deletedEncounter = await this.model.findByIdAndDelete(id)
-        ctx.assert(Boolean(deletedEncounter), 404, `No encounter found with ID ${id}`)
-
-        ctx.status = 200
-        ctx.body = { result: deletedEncounter }
+    /**
+     * Creates an encounter.
+     * Supply the title, description, and actions optionally.
+     * The title must be unique, or else you will receive an error.
+     * Returns the created encounter.
+     * @param requestBody A JSON body containing the title, description, and optionally a list of actions.
+     */
+    @SuccessResponse(201, 'Successfully Created')
+    @Response<ErrorResponseJSON>(400, 'Validation Failed')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
+    @Post()
+    public async postEncounter(@Body() requestBody: EncounterCreationParams): Promise<SuccessResponseJSON<Encounter>> {
+        this.setStatus(201)
+        return { result: await this.service.createEncounter(requestBody) }
     }
 
-    /** Validate that all of the fields provided match the Encounter model */
-    private async validateEncounterRequestBody(encounter: any, ctx: Koa.Context): Promise<void> {
-        const hasProperTitle = Boolean(encounter.title && typeof encounter.title === 'string')
-        ctx.assert(hasProperTitle, 400, 'An encounter requires a title property of type string.')
+    /**
+     * Partially updates an encounter.
+     * Provide only the fields you want to update, the rest will remain the same.
+     * Returns the updated encounter.
+     * @param id Mongo ObjectID of the desired encounter
+     * @param requestBody Fields and values to update on the encounter
+     */
+    @SuccessResponse(200, 'Successfully Updated')
+    @Response<ErrorResponseJSON>(400, 'Validation Failed')
+    @Response<ErrorResponseJSON>(404, 'Encounter Not Found')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
+    @Patch('{id}')
+    public async patchEncounter(
+        @Path() id: string,
+        @Body() requestBody: EncounterPatchParams,
+    ): Promise<SuccessResponseJSON<Encounter>> {
+        this.setStatus(200)
+        return { result: await this.service.partiallyUpdateEncounter(id, requestBody) }
+    }
 
-        const hasProperDescription = Boolean(encounter.description && typeof encounter.description === 'string')
-        ctx.assert(hasProperDescription, 400, 'An encounter requires a description property of type string.')
+    /**
+     * Replace/create an encounter.
+     * If the ID exists in the database, replace it with the given encounter.
+     * If the ID does not exist but is valid, create it.
+     * @param id Mongo ObjectID of the desired encounter
+     * @param requestBody Fields and values to update on the encounter. Must be a complete encounter record.
+     */
+    @SuccessResponse(200, 'Successfully Updated')
+    @Response<ErrorResponseJSON>(400, 'Validation Failed')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
+    @Put('{id}')
+    public async putEncounter(
+        @Path() id: string,
+        @Body() requestBody: Encounter,
+    ): Promise<SuccessResponseJSON<Encounter>> {
+        this.setStatus(200)
+        return { result: await this.service.replaceEncounter(id, requestBody) }
+    }
 
-        if (encounter.numberOfRuns) {
-            ctx.assert(typeof encounter.numberOfRuns === 'number', 400, "'numberOfRuns' property must be a number")
-        }
-
-        if (encounter.actions) {
-            const hasProperActions =
-                Array.isArray(encounter.actions) && encounter.actions.every((a: unknown) => typeof a === 'string')
-            ctx.assert(hasProperActions, 400, "'actions' property must be an array of strings")
-        }
+    /**
+     * Delete a given encounter from the database.
+     * It will be removed permanently - you won't be able to get it back!
+     * @param id Mongo ObjectID of the desired encounter
+     */
+    @SuccessResponse(200, 'Successfully Deleted')
+    @Response<ErrorResponseJSON>(400, 'Validation Failed')
+    @Response<ErrorResponseJSON>(404, 'Encounter Not Found')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
+    @Delete('{id}')
+    public async deleteEncounter(@Path() id: string): Promise<SuccessResponseJSON<Encounter>> {
+        this.setStatus(200)
+        return { result: await this.service.deleteEncounter(id) }
     }
 }

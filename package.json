@@ -8,11 +8,12 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "nodemon --watch src/**/* -e ts --exec ts-node ./src/server.ts",
-    "start-docker": "ts-node ./src/server.ts",
+    "start": "yarn && yarn build && nodemon --watch src/**/* -e ts --exec ts-node ./src/server.ts",
+    "start-docker": "yarn build && ts-node ./src/server.ts",
     "lint": "eslint ./src/**/*.ts",
     "lint-fix": "yarn lint --fix",
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "build": "tsoa spec && tsoa routes"
   },
   "husky": {
     "hooks": {
@@ -26,6 +27,9 @@
     "testTimeout": 1000
   },
   "dependencies": {
+    "@hapi/boom": "^9.1.0",
+    "@koa/router": "^8.0.8",
+    "@types/koa__router": "^8.0.2",
     "dotenv": "^8.2.0",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
@@ -34,6 +38,7 @@
     "koa-router": "^8.0.8",
     "koa2-cors": "^2.0.6",
     "mongoose": "^5.9.5",
+    "tsoa": "^3.0.8",
     "winston": "^3.2.1"
   },
   "devDependencies": {

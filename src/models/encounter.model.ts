@@ -1,21 +1,57 @@
 import { Schema, Document, model, Model } from 'mongoose'
 
-export interface Encounter extends Document {
-    /** A fun title for the encounter */
+/**
+ * Encounters are events that can happen to you as a player.
+ * Their titles must be unique, and a list of actions the player
+ * can take may be defined.
+ */
+export interface Encounter {
+    /**
+     * A fun title for the encounter.
+     * @example "A Zombie Grabs Your Leg!"
+     */
     title: string
-    /** Some text describing what happens in this encounter */
+
+    /**
+     * Some text describing what happens in this encounter.
+     * @example "You can tell from here that it has terrible breath."
+     */
     description: string
-    /** A list of actions the user must take when they hit this encounter */
-    actions: string[]
-    /** How many times this encounter has been run. Defaults to 0 */
+
+    /**
+     * A list of actions the user can take when they hit this encounter.
+     * @example ["Attempt to kick it away!"]
+     */
+    actions?: string[]
+
+    /**
+     * How many times this encounter has been run.
+     * Defaults to 0.
+     * @example 0
+     */
     numberOfRuns: number
-    /** The date this document was created. Created by Mongoose */
+
+    /**
+     * The date this document was created. Created by Mongoose.
+     * @example "2020-01-01T00:00:00.000Z"
+     */
     createdAt: Date
-    /** The last date this document was updated. Created by Mongoose */
+
+    /**
+     * The last date this document was updated. Created by Mongoose.
+     * @example "2020-01-01T00:00:00.000Z"
+     */
     updatedAt: Date
-    /** The version number for this document. Created by Mongoose */
+
+    /**
+     * The version number for this document. Created by Mongoose.
+     * @example 1
+     */
     __v: number
 }
+
+export type EncounterCreationParams = Pick<Encounter, 'title' | 'description' | 'actions'>
+export type EncounterPatchParams = Partial<EncounterCreationParams>
 
 const encounterSchema = new Schema(
     {
@@ -27,4 +63,4 @@ const encounterSchema = new Schema(
     { timestamps: true },
 )
 
-export default (): Model<Encounter> => model<Encounter>('Encounter', encounterSchema)
+export default (): Model<Encounter & Document> => model<Encounter & Document>('Encounter', encounterSchema)

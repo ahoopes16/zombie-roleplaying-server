@@ -4,9 +4,10 @@
        "target": "es2017",
        "noImplicitAny": true,
        "outDir": "./dist",
+       "experimentalDecorators": true,
        "sourceMap": true
    },
    "include": [
        "./src/**/*"
-   ]
+   ],
 }
