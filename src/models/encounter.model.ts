@@ -29,7 +29,7 @@ export interface Encounter {
      * Defaults to 0.
      * @example 0
      */
-    numberOfRuns: bigint
+    numberOfRuns: number
 
     /**
      * The date this document was created. Created by Mongoose.
@@ -47,7 +47,7 @@ export interface Encounter {
      * The version number for this document. Created by Mongoose.
      * @example 1
      */
-    __v: bigint
+    __v: number
 }
 
 export type EncounterCreationParams = Pick<Encounter, 'title' | 'description' | 'actions'>
