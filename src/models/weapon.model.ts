@@ -55,6 +55,8 @@ export interface Weapon {
     __v: number
 }
 
+export type WeaponCreationParams = Pick<Weapon, 'name' | 'description' | 'attackDieCount' | 'attackDieSides'>
+
 const weaponSchema = new Schema(
     {
         name: { type: String, required: true, unique: true, trim: true },
