@@ -1,9 +1,13 @@
-import { EncounterController } from '../src/controllers/encounter.controller'
-import EncounterModel, { EncounterCreationParams, EncounterPatchParams, Encounter } from '../src/models/encounter.model'
-import { createFakeEncounter } from './helpers/encounter.helper'
+import { EncounterController } from '../../src/controllers/encounter.controller'
+import EncounterModel, {
+    EncounterCreationParams,
+    EncounterPatchParams,
+    Encounter,
+} from '../../src/models/encounter.model'
+import { createFakeEncounter } from '../helpers/encounter.helper'
 import { ObjectId } from 'mongodb'
-import DBConnector from '../src/database'
-import env from '../src/environment'
+import DBConnector from '../../src/database'
+import env from '../../src/environment'
 import * as mongoose from 'mongoose'
 
 beforeAll(async () => {

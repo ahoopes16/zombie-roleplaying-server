@@ -22,19 +22,19 @@ export interface Weapon {
      * The number of die to use when attacking with this weapon.
      * @example 2
      */
-    attackDieCount: bigint
+    attackDieCount: number
 
     /**
      * The number of sides the die should have when attacking with this weapon.
      * @example 10
      */
-    attackDieSides: bigint
+    attackDieSides: number
 
     /**
      * The number of times this weapon has been looted by players.
      * @example 2
      */
-    timesLooted: bigint
+    timesLooted: number
 
     /**
      * The date this document was created. Created by Mongoose.
@@ -52,8 +52,10 @@ export interface Weapon {
      * The version number for this document. Created by Mongoose.
      * @example 1
      */
-    __v: bigint
+    __v: number
 }
+
+export type WeaponCreationParams = Pick<Weapon, 'name' | 'description' | 'attackDieCount' | 'attackDieSides'>
 
 const weaponSchema = new Schema(
     {
@@ -61,7 +63,7 @@ const weaponSchema = new Schema(
         description: { type: String, required: true },
         attackDieCount: { type: Number, required: true },
         attackDieSides: { type: Number, required: true },
-        timesLooted: { type: Number, required: true },
+        timesLooted: { type: Number, default: 0 },
     },
     { timestamps: true },
 )

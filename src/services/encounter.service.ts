@@ -1,6 +1,5 @@
 import EncounterModel, { Encounter, EncounterCreationParams, EncounterPatchParams } from '../models/encounter.model'
 import { Model, Document, isValidObjectId } from 'mongoose'
-import { ObjectId } from 'mongodb'
 import * as Boom from '@hapi/boom'
 
 export class EncounterService {

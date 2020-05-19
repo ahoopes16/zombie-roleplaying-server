@@ -1,8 +1,12 @@
-import { EncounterService } from '../src/services/encounter.service'
-import EncounterModel, { EncounterCreationParams, EncounterPatchParams, Encounter } from '../src/models/encounter.model'
-import { createFakeEncounter } from './helpers/encounter.helper'
-import DBConnector from '../src/database'
-import env from '../src/environment'
+import { EncounterService } from '../../src/services/encounter.service'
+import EncounterModel, {
+    EncounterCreationParams,
+    EncounterPatchParams,
+    Encounter,
+} from '../../src/models/encounter.model'
+import { createFakeEncounter } from '../helpers/encounter.helper'
+import DBConnector from '../../src/database'
+import env from '../../src/environment'
 import { ObjectId } from 'mongodb'
 import * as mongoose from 'mongoose'
 import * as Boom from '@hapi/boom'
