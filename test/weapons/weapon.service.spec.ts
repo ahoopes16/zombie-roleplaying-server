@@ -1,8 +1,8 @@
-import { WeaponService } from '../src/services/weapon.service'
-import WeaponModel, { WeaponCreationParams } from '../src/models/weapon.model'
-import { createFakeWeapon } from './helpers/weapon.helper'
-import DBConnector from '../src/database'
-import env from '../src/environment'
+import { WeaponService } from '../../src/services/weapon.service'
+import WeaponModel, { WeaponCreationParams } from '../../src/models/weapon.model'
+import { createFakeWeapon } from '../helpers/weapon.helper'
+import DBConnector from '../../src/database'
+import env from '../../src/environment'
 import * as mongoose from 'mongoose'
 import * as Boom from '@hapi/boom'
 

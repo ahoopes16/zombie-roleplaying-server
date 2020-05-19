@@ -1,7 +1,7 @@
-import { WeaponController } from '../src/controllers/weapon.controller'
-import EncounterModel, { WeaponCreationParams } from '../src/models/weapon.model'
-import DBConnector from '../src/database'
-import env from '../src/environment'
+import { WeaponController } from '../../src/controllers/weapon.controller'
+import EncounterModel, { WeaponCreationParams } from '../../src/models/weapon.model'
+import DBConnector from '../../src/database'
+import env from '../../src/environment'
 import * as mongoose from 'mongoose'
 
 beforeAll(async () => {
