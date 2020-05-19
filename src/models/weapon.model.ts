@@ -61,7 +61,7 @@ const weaponSchema = new Schema(
         description: { type: String, required: true },
         attackDieCount: { type: Number, required: true },
         attackDieSides: { type: Number, required: true },
-        timesLooted: { type: Number, required: true },
+        timesLooted: { type: Number, default: 0 },
     },
     { timestamps: true },
 )
