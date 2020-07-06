@@ -28,6 +28,33 @@ const nameExistsError = (name: string): Boom.Boom => {
 }
 
 describe('weapon service', () => {
+    describe('listWeapons', () => {
+        test('happy path - returns list of weapons', async () => {
+            const service = new WeaponService()
+            const weaponOneParams: WeaponCreationParams = {
+                name: `Name_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 2,
+                attackDieSides: 10,
+            }
+            const weaponTwoParams: WeaponCreationParams = {
+                name: `Name_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 3,
+                attackDieSides: 12,
+            }
+            const weaponOne = await createFakeWeapon(model, weaponOneParams)
+            const weaponTwo = await createFakeWeapon(model, weaponTwoParams)
+
+            const actual = await service.listWeapons()
+
+            expect(actual).toBeDefined()
+            expect(actual.length).toBe(2)
+            expect(actual.find(weapon => weapon.name === weaponOne.name)).toBeTruthy()
+            expect(actual.find(weapon => weapon.name === weaponTwo.name)).toBeTruthy()
+        })
+    })
+
     describe('createWeapon', () => {
         test('happy path - returns created weapon', async () => {
             const service = new WeaponService()

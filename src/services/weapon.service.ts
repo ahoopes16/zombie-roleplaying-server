@@ -9,6 +9,10 @@ export class WeaponService {
         this.model = model
     }
 
+    public listWeapons(): Promise<Array<Weapon & Document>> {
+        return this.model.find().exec()
+    }
+
     public async createWeapon(weaponParams: WeaponCreationParams): Promise<Weapon & Document> {
         await this.validateNameDoesNotExist(weaponParams)
         return this.model.create(weaponParams)
