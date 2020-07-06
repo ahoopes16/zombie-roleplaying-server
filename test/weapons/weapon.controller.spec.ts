@@ -1,5 +1,6 @@
 import { WeaponController } from '../../src/controllers/weapon.controller'
-import EncounterModel, { WeaponCreationParams } from '../../src/models/weapon.model'
+import WeaponModel, { WeaponCreationParams } from '../../src/models/weapon.model'
+import { createFakeWeapon } from '../helpers/weapon.helper'
 import DBConnector from '../../src/database'
 import env from '../../src/environment'
 import * as mongoose from 'mongoose'
@@ -12,14 +13,52 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
-    await EncounterModel().deleteMany({})
+    await WeaponModel().deleteMany({})
 })
 
 afterAll(async () => {
     await mongoose.disconnect()
 })
 
+const model = WeaponModel()
+
 describe('weapon controller', () => {
+    describe('getWeapons', () => {
+        test('returns empty array if there are no encounters', async () => {
+            const controller = new WeaponController()
+
+            const actual = await controller.getWeapons()
+
+            expect(actual.result).toBeDefined()
+            expect(actual.result.length).toBe(0)
+        })
+
+        test('returns array of encounters inside result', async () => {
+            const controller = new WeaponController()
+            const weaponOneParams: WeaponCreationParams = {
+                name: `Name_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 2,
+                attackDieSides: 10,
+            }
+            const weaponTwoParams: WeaponCreationParams = {
+                name: `Name_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 3,
+                attackDieSides: 12,
+            }
+            const weaponOne = await createFakeWeapon(model, weaponOneParams)
+            const weaponTwo = await createFakeWeapon(model, weaponTwoParams)
+
+            const actual = await controller.getWeapons()
+
+            expect(actual.result).toBeDefined()
+            expect(actual.result.length).toBe(2)
+            expect(actual.result.find(weapon => weapon.name === weaponOne.name)).toBeTruthy()
+            expect(actual.result.find(weapon => weapon.name === weaponTwo.name)).toBeTruthy()
+        })
+    })
+
     describe('postWeapon', () => {
         test('returns created weapon inside result', async () => {
             const expected: WeaponCreationParams = {

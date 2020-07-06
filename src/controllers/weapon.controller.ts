@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Response, Route, SuccessResponse } from 'tsoa'
+import { Body, Controller, Get, Post, Response, Route, SuccessResponse } from 'tsoa'
 import { Weapon, WeaponCreationParams } from '../models/weapon.model'
 import { WeaponService } from '../services/weapon.service'
 import { SuccessResponseJSON, ErrorResponseJSON } from '../types/Response.type'
@@ -10,6 +10,18 @@ export class WeaponController extends Controller {
     constructor(service = new WeaponService()) {
         super()
         this.service = service
+    }
+
+    /**
+     * Get a list of all weapons.
+     * Currently there is no pagination or limits implemented.
+     */
+    @SuccessResponse(200, 'Success')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
+    @Get()
+    public async getWeapons(): Promise<SuccessResponseJSON<Weapon[]>> {
+        this.setStatus(200)
+        return { result: await this.service.listWeapons() }
     }
 
     /**
