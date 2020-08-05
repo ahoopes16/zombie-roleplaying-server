@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Response, Route, SuccessResponse } from 'tsoa'
+import { Body, Controller, Get, Path, Post, Response, Route, SuccessResponse } from 'tsoa'
 import { Weapon, WeaponCreationParams } from '../models/weapon.model'
 import { WeaponService } from '../services/weapon.service'
 import { SuccessResponseJSON, ErrorResponseJSON } from '../types/Response.type'
@@ -22,6 +22,20 @@ export class WeaponController extends Controller {
     public async getWeapons(): Promise<SuccessResponseJSON<Weapon[]>> {
         this.setStatus(200)
         return { result: await this.service.listWeapons() }
+    }
+
+    /**
+     * Get the details of a specific weapon by Mongo ID.
+     * @param id Mongo ObjectID of the desired weapon
+     */
+    @SuccessResponse(200, 'Success')
+    @Response<ErrorResponseJSON>(400, 'Validation Failed')
+    @Response<ErrorResponseJSON>(404, 'Weapon Not Found')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
+    @Get('{id}')
+    public async getWeapon(@Path() id: string): Promise<SuccessResponseJSON<Weapon>> {
+        this.setStatus(200)
+        return { result: await this.service.inspectWeapon(id) }
     }
 
     /**
