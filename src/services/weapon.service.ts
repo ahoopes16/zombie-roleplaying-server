@@ -1,5 +1,6 @@
 import WeaponModel, { Weapon, WeaponCreationParams } from '../models/weapon.model'
 import { Model, Document } from 'mongoose'
+import { validateMongoID, validateIdExistsInModel } from '../util/database.util'
 import * as Boom from '@hapi/boom'
 
 export class WeaponService {
@@ -11,6 +12,12 @@ export class WeaponService {
 
     public listWeapons(): Promise<Array<Weapon & Document>> {
         return this.model.find().exec()
+    }
+
+    public async inspectWeapon(id: string): Promise<Weapon & Document> {
+        validateMongoID(id)
+        const weapon = await validateIdExistsInModel(id, this.model)
+        return weapon
     }
 
     public async createWeapon(weaponParams: WeaponCreationParams): Promise<Weapon & Document> {
