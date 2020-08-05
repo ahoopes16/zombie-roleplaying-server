@@ -29,7 +29,7 @@ afterAll(async () => {
 const model = EncounterModel()
 
 const notFoundError = (id: string): Boom.Boom => {
-    return Boom.notFound(`Encounter with ID "${id}" not found.`)
+    return Boom.notFound(`Item with ID "${id}" not found.`)
 }
 
 const invalidMongoIDError = (id: string): Boom.Boom => {
