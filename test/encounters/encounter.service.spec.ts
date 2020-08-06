@@ -33,7 +33,7 @@ const notFoundError = (id: string): Boom.Boom => {
 }
 
 const invalidMongoIDError = (id: string): Boom.Boom => {
-    return Boom.badRequest(`Invalid encounter ID. Please give a valid Mongo ObjectID. Received "${id}".`)
+    return Boom.badRequest(`Invalid Mongo ObjectID. Please give a valid Mongo ObjectID. Received "${id}".`)
 }
 
 const titleExistsError = (title: string): Boom.Boom => {

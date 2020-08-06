@@ -3,7 +3,7 @@ import * as Boom from '@hapi/boom'
 
 export const validateMongoID = (id: string): void => {
     if (!isValidObjectId(id)) {
-        throw Boom.badRequest(`Invalid encounter ID. Please give a valid Mongo ObjectID. Received "${id}".`)
+        throw Boom.badRequest(`Invalid Mongo ObjectID. Please give a valid Mongo ObjectID. Received "${id}".`)
     }
 }
 

@@ -59,6 +59,26 @@ describe('weapon controller', () => {
         })
     })
 
+    describe('getWeapon', () => {
+        test('returns desired encounter', async () => {
+            const controller = new WeaponController()
+            const weaponParams: WeaponCreationParams = {
+                name: `Name_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 2,
+                attackDieSides: 10,
+            }
+
+            const weapon = await createFakeWeapon(model, weaponParams)
+
+            const actual = await controller.getWeapon(weapon._id)
+
+            expect(actual.result).toBeDefined()
+            expect(actual.result.name).toBe(weapon.name)
+            expect(actual.result.description).toBe(weapon.description)
+        })
+    })
+
     describe('postWeapon', () => {
         test('returns created weapon inside result', async () => {
             const expected: WeaponCreationParams = {
