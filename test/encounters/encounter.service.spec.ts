@@ -29,11 +29,11 @@ afterAll(async () => {
 const model = EncounterModel()
 
 const notFoundError = (id: string): Boom.Boom => {
-    return Boom.notFound(`Encounter with ID "${id}" not found.`)
+    return Boom.notFound(`Item with ID "${id}" not found.`)
 }
 
 const invalidMongoIDError = (id: string): Boom.Boom => {
-    return Boom.badRequest(`Invalid encounter ID. Please give a valid Mongo ObjectID. Received "${id}".`)
+    return Boom.badRequest(`Invalid Mongo ObjectID. Please give a valid Mongo ObjectID. Received "${id}".`)
 }
 
 const titleExistsError = (title: string): Boom.Boom => {

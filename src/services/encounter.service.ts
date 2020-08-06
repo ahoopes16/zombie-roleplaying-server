@@ -1,5 +1,6 @@
 import EncounterModel, { Encounter, EncounterCreationParams, EncounterPatchParams } from '../models/encounter.model'
-import { Model, Document, isValidObjectId } from 'mongoose'
+import { Model, Document } from 'mongoose'
+import { validateMongoID, validateIdExistsInModel } from '../util/database.util'
 import * as Boom from '@hapi/boom'
 
 export class EncounterService {
@@ -14,8 +15,8 @@ export class EncounterService {
     }
 
     public async inspectEncounter(_id: string): Promise<Encounter & Document> {
-        this.validateMongoID(_id)
-        const encounter = await this.validateEncounterExists(_id)
+        validateMongoID(_id)
+        const encounter = await validateIdExistsInModel(_id, this.model)
         return encounter
     }
 
@@ -28,8 +29,8 @@ export class EncounterService {
         _id: string,
         encounterParams: EncounterPatchParams,
     ): Promise<Encounter & Document> {
-        this.validateMongoID(_id)
-        const encounter = await this.validateEncounterExists(_id)
+        validateMongoID(_id)
+        const encounter = await validateIdExistsInModel(_id, this.model)
         await this.validateTitleDoesNotExist(encounterParams)
 
         encounter.set(encounterParams)
@@ -37,7 +38,7 @@ export class EncounterService {
     }
 
     public async replaceEncounter(_id: string, newEncounter: Encounter): Promise<Encounter & Document> {
-        this.validateMongoID(_id)
+        validateMongoID(_id)
         await this.validateTitleDoesNotExist(newEncounter)
 
         return this.model.findOneAndUpdate({ _id }, newEncounter, {
@@ -48,24 +49,9 @@ export class EncounterService {
     }
 
     public async deleteEncounter(_id: string): Promise<Encounter & Document> {
-        this.validateMongoID(_id)
-        await this.validateEncounterExists(_id)
+        validateMongoID(_id)
+        await validateIdExistsInModel(_id, this.model)
         return this.model.findByIdAndRemove(_id)
-    }
-
-    private async validateEncounterExists(_id: string): Promise<Encounter & Document> {
-        const encounter = await this.model.findById(_id).exec()
-        if (!encounter) {
-            throw Boom.notFound(`Encounter with ID "${_id}" not found.`)
-        }
-
-        return encounter
-    }
-
-    private validateMongoID(id: string): void {
-        if (!isValidObjectId(id)) {
-            throw Boom.badRequest(`Invalid encounter ID. Please give a valid Mongo ObjectID. Received "${id}".`)
-        }
     }
 
     private async validateTitleDoesNotExist(
