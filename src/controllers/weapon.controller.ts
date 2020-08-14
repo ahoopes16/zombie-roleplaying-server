@@ -66,6 +66,6 @@ export class WeaponController extends Controller {
     @Delete('{weaponId}')
     public async deleteWeapon(@Path() weaponId: string): Promise<any> {
         this.setStatus(200)
-        return { weaponId }
+        return { result: await this.service.removeWeapon(weaponId) }
     }
 }

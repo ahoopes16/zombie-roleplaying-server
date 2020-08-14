@@ -100,7 +100,7 @@ describe('weapon controller', () => {
     })
 
     describe('deleteWeapon', () => {
-        test.skip('returns deleted weapon inside result', async () => {
+        test('returns deleted weapon inside result', async () => {
             const controller = new WeaponController()
             const weaponParams: WeaponCreationParams = {
                 name: `Weapon_${Math.random()}`,
