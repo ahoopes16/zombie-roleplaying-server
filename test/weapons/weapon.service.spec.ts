@@ -140,4 +140,62 @@ describe('weapon service', () => {
             await expect(service.createWeapon(createParams)).rejects.toThrow(expectedError)
         })
     })
+
+    describe('removeWeapon', () => {
+        test('happy path - removes weapon from database', async () => {
+            const service = new WeaponService()
+            const weaponParams: WeaponCreationParams = {
+                name: `Weapon_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 2,
+                attackDieSides: 8,
+            }
+
+            const weapon = await createFakeWeapon(model, weaponParams)
+
+            const before = await model.findById(weapon._id)
+            expect(before._id.toString()).toBe(weapon._id.toString())
+            expect(before.name).toBe(weapon.name)
+
+            await service.removeWeapon(weapon._id)
+            const after = await model.findById(weapon._id)
+            expect(after).toBeFalsy()
+        })
+
+        test('happy path - returns removed weapon', async () => {
+            const service = new WeaponService()
+            const weaponParams: WeaponCreationParams = {
+                name: `Weapon_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 2,
+                attackDieSides: 8,
+            }
+
+            const expected = await createFakeWeapon(model, weaponParams)
+
+            const actual = await service.removeWeapon(expected._id)
+
+            expect(actual).toBeTruthy()
+            expect(actual._id.toString()).toBe(expected._id.toString())
+            expect(actual.name).toBe(expected.name)
+            expect(actual.description).toBe(actual.description)
+        })
+
+        test('throws a BadRequest error when given an invalid Mongo ID', async () => {
+            const service = new WeaponService()
+            const invalidId = `invalid-id-${Math.random()}`
+            const expectedError = invalidMongoIDError(invalidId)
+
+            await expect(service.removeWeapon(invalidId)).rejects.toThrow(expectedError)
+        })
+
+        test('throws a NotFound error when given a valid Mongo ID that does not exist', async () => {
+            const mongoId = new ObjectId().toString()
+            const expectedError = notFoundError(mongoId)
+
+            const service = new WeaponService()
+
+            await expect(service.removeWeapon(mongoId)).rejects.toThrow(expectedError)
+        })
+    })
 })

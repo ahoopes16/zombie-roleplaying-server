@@ -98,4 +98,24 @@ describe('weapon controller', () => {
             expect(actual.result.attackDieSides).toBe(expected.attackDieSides)
         })
     })
+
+    describe('deleteWeapon', () => {
+        test('returns deleted weapon inside result', async () => {
+            const controller = new WeaponController()
+            const weaponParams: WeaponCreationParams = {
+                name: `Weapon_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 2,
+                attackDieSides: 10,
+            }
+            const expected = await createFakeWeapon(model, weaponParams)
+
+            const actual = await controller.deleteWeapon(expected._id)
+
+            expect(actual.result).toBeDefined()
+            expect(actual.result.name).toBe(expected.name)
+            expect(actual.result.description).toBe(expected.description)
+            expect(actual.result._id.toString()).toBe(expected._id.toString())
+        })
+    })
 })
