@@ -189,6 +189,13 @@ describe('weapon service', () => {
             await expect(service.removeWeapon(invalidId)).rejects.toThrow(expectedError)
         })
 
-        test.todo('throws a NotFound error when given a valid Mongo ID that does not exist')
+        test('throws a NotFound error when given a valid Mongo ID that does not exist', async () => {
+            const mongoId = new ObjectId().toString()
+            const expectedError = notFoundError(mongoId)
+
+            const service = new WeaponService()
+
+            await expect(service.removeWeapon(mongoId)).rejects.toThrow(expectedError)
+        })
     })
 })
