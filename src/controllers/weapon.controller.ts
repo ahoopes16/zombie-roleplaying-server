@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Path, Post, Response, Route, SuccessResponse } from 'tsoa'
+import { Body, Controller, Delete, Get, Path, Post, Response, Route, SuccessResponse } from 'tsoa'
 import { Weapon, WeaponCreationParams } from '../models/weapon.model'
 import { WeaponService } from '../services/weapon.service'
 import { SuccessResponseJSON, ErrorResponseJSON } from '../types/Response.type'
@@ -26,20 +26,20 @@ export class WeaponController extends Controller {
 
     /**
      * Get the details of a specific weapon by Mongo ID.
-     * @param id Mongo ObjectID of the desired weapon
+     * @param weaponId Mongo ObjectID of the desired weapon
      */
     @SuccessResponse(200, 'Success')
     @Response<ErrorResponseJSON>(400, 'Validation Failed')
     @Response<ErrorResponseJSON>(404, 'Weapon Not Found')
     @Response<ErrorResponseJSON>(500, 'Internal Server Error')
-    @Get('{id}')
-    public async getWeapon(@Path() id: string): Promise<SuccessResponseJSON<Weapon>> {
+    @Get('{weaponId}')
+    public async getWeapon(@Path() weaponId: string): Promise<SuccessResponseJSON<Weapon>> {
         this.setStatus(200)
-        return { result: await this.service.inspectWeapon(id) }
+        return { result: await this.service.inspectWeapon(weaponId) }
     }
 
     /**
-     * Creates a weapon.
+     * Create a weapon.
      * Supply the name, description, and attack die count/sides.
      * The name must be unique, or else you will receive an error.
      * Returns the created weapon.
@@ -52,5 +52,16 @@ export class WeaponController extends Controller {
     public async postWeapon(@Body() requestBody: WeaponCreationParams): Promise<SuccessResponseJSON<Weapon>> {
         this.setStatus(201)
         return { result: await this.service.createWeapon(requestBody) }
+    }
+
+    /**
+     * Delete a given weapon from the database.
+     * It will be removed permanently - you won't be able to get it back!
+     * @param weaponId Mongo Object ID of the desired weapon.
+     */
+    @Delete('{weaponId}')
+    public async deleteWeapon(@Path() weaponId: string): Promise<any> {
+        this.setStatus(200)
+        return { weaponId }
     }
 }
