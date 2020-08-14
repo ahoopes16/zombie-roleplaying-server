@@ -26,6 +26,7 @@ export class WeaponService {
     }
 
     public async removeWeapon(id: string): Promise<Weapon & Document> {
+        validateMongoID(id)
         return this.model.findByIdAndRemove(id)
     }
 

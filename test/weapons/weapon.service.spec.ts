@@ -181,7 +181,14 @@ describe('weapon service', () => {
             expect(actual.description).toBe(actual.description)
         })
 
-        test.todo('throws a BadRequest error when given an invalid Mongo ID')
+        test('throws a BadRequest error when given an invalid Mongo ID', async () => {
+            const service = new WeaponService()
+            const invalidId = `invalid-id-${Math.random()}`
+            const expectedError = invalidMongoIDError(invalidId)
+
+            await expect(service.removeWeapon(invalidId)).rejects.toThrow(expectedError)
+        })
+
         test.todo('throws a NotFound error when given a valid Mongo ID that does not exist')
     })
 })
