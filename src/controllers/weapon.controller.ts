@@ -64,7 +64,7 @@ export class WeaponController extends Controller {
     @Response<ErrorResponseJSON>(404, 'Weapon Not Found')
     @Response<ErrorResponseJSON>(500, 'Internal Server Error')
     @Delete('{weaponId}')
-    public async deleteWeapon(@Path() weaponId: string): Promise<any> {
+    public async deleteWeapon(@Path() weaponId: string): Promise<SuccessResponseJSON<Weapon>> {
         this.setStatus(200)
         return { result: await this.service.removeWeapon(weaponId) }
     }
