@@ -59,6 +59,10 @@ export class WeaponController extends Controller {
      * It will be removed permanently - you won't be able to get it back!
      * @param weaponId Mongo Object ID of the desired weapon.
      */
+    @SuccessResponse(200, 'Success')
+    @Response<ErrorResponseJSON>(400, 'Validation Failed')
+    @Response<ErrorResponseJSON>(404, 'Weapon Not Found')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
     @Delete('{weaponId}')
     public async deleteWeapon(@Path() weaponId: string): Promise<any> {
         this.setStatus(200)

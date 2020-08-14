@@ -25,6 +25,10 @@ export class WeaponService {
         return this.model.create(weaponParams)
     }
 
+    public async removeWeapon(id: string): Promise<Weapon & Document> {
+        return this.model.findByIdAndRemove(id)
+    }
+
     private async validateNameDoesNotExist(params: WeaponCreationParams | Weapon): Promise<void> {
         const { name } = params
 
