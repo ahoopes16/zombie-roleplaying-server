@@ -198,8 +198,51 @@ describe('weapon service', () => {
             expect(created.timesLooted).toBe(updateParams.timesLooted)
         })
 
-        test.todo('throws a BadRequest error when given an invalid Mongo ID')
-        test.todo('throws a BadRequest error when given a name that already exists')
+        test('throws a BadRequest error when given an invalid Mongo ID', async () => {
+            const invalidId = `invalid-id-${Math.random()}`
+            const service = new WeaponService()
+            const updateParams: Weapon = {
+                _id: invalidId,
+                name: `Weapon_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 4,
+                attackDieSides: 10,
+                timesLooted: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                __v: 2,
+            }
+
+            const expectedError = invalidMongoIDError(invalidId)
+
+            await expect(service.replaceOrCreateWeapon(invalidId, updateParams)).rejects.toThrow(expectedError)
+        })
+
+        test('throws a BadRequest error when given a name that already exists', async () => {
+            const service = new WeaponService()
+            const weaponParams: WeaponCreationParams = {
+                name: `Weapon_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 2,
+                attackDieSides: 8,
+            }
+            const weapon = await createFakeWeapon(model, weaponParams)
+
+            const updateParams: Weapon = {
+                _id: weapon._id,
+                name: weapon.name,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 4,
+                attackDieSides: 10,
+                timesLooted: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                __v: 2,
+            }
+            const expectedError = nameExistsError(weapon.name)
+
+            await expect(service.replaceOrCreateWeapon(weapon._id, updateParams)).rejects.toThrow(expectedError)
+        })
     })
 
     describe('removeWeapon', () => {
