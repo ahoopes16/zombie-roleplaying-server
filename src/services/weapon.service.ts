@@ -25,6 +25,14 @@ export class WeaponService {
         return this.model.create(weaponParams)
     }
 
+    public async replaceOrCreateWeapon(_id: string, newWeapon: Weapon): Promise<Weapon & Document> {
+        return this.model.findOneAndUpdate({ _id }, newWeapon, {
+            upsert: true,
+            new: true,
+            setDefaultsOnInsert: true,
+        })
+    }
+
     public async removeWeapon(id: string): Promise<Weapon & Document> {
         validateMongoID(id)
         await validateIdExistsInModel(id, this.model)

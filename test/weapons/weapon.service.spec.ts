@@ -1,5 +1,5 @@
 import { WeaponService } from '../../src/services/weapon.service'
-import WeaponModel, { WeaponCreationParams } from '../../src/models/weapon.model'
+import WeaponModel, { Weapon, WeaponCreationParams } from '../../src/models/weapon.model'
 import { createFakeWeapon } from '../helpers/weapon.helper'
 import DBConnector from '../../src/database'
 import env from '../../src/environment'
@@ -139,6 +139,67 @@ describe('weapon service', () => {
 
             await expect(service.createWeapon(createParams)).rejects.toThrow(expectedError)
         })
+    })
+
+    describe('replaceOrCreateWeapon', () => {
+        test('happy path - updates weapon if Mongo ID exists', async () => {
+            const weaponParams: WeaponCreationParams = {
+                name: `Weapon_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 2,
+                attackDieSides: 8,
+            }
+            const original = await createFakeWeapon(model, weaponParams)
+            const service = new WeaponService()
+            const updateParams: Weapon = {
+                _id: original._id,
+                name: `Weapon_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 4,
+                attackDieSides: 10,
+                timesLooted: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                __v: 2,
+            }
+
+            await service.replaceOrCreateWeapon(original._id, updateParams)
+            const updated = await model.findById(original._id)
+
+            expect(updated._id).toStrictEqual(original._id)
+            expect(updated.name).toBe(updateParams.name)
+            expect(updated.description).toBe(updateParams.description)
+            expect(updated.attackDieCount).toBe(updateParams.attackDieCount)
+            expect(updated.timesLooted).toBe(updateParams.timesLooted)
+        })
+
+        test('happy path - creates weapon if Mongo ID is valid but does not exist', async () => {
+            const service = new WeaponService()
+            const _id = new ObjectId().toString()
+            const updateParams: Weapon = {
+                _id,
+                name: `Weapon_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 4,
+                attackDieSides: 10,
+                timesLooted: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                __v: 2,
+            }
+
+            await service.replaceOrCreateWeapon(_id, updateParams)
+            const created = await model.findById(_id)
+
+            expect(created._id.toString()).toBe(_id)
+            expect(created.name).toBe(updateParams.name)
+            expect(created.description).toBe(updateParams.description)
+            expect(created.attackDieCount).toBe(updateParams.attackDieCount)
+            expect(created.timesLooted).toBe(updateParams.timesLooted)
+        })
+
+        test.todo('throws a BadRequest error when given an invalid Mongo ID')
+        test.todo('throws a BadRequest error when given a name that already exists')
     })
 
     describe('removeWeapon', () => {
