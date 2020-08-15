@@ -37,7 +37,7 @@ export class EncounterService {
         return encounter.save()
     }
 
-    public async replaceEncounter(_id: string, newEncounter: Encounter): Promise<Encounter & Document> {
+    public async replaceOrCreateEncounter(_id: string, newEncounter: Encounter): Promise<Encounter & Document> {
         validateMongoID(_id)
         await this.validateTitleDoesNotExist(newEncounter)
 
@@ -48,7 +48,7 @@ export class EncounterService {
         })
     }
 
-    public async deleteEncounter(_id: string): Promise<Encounter & Document> {
+    public async removeEncounter(_id: string): Promise<Encounter & Document> {
         validateMongoID(_id)
         await validateIdExistsInModel(_id, this.model)
         return this.model.findByIdAndRemove(_id)

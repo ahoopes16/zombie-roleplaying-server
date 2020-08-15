@@ -124,6 +124,7 @@ describe('encounter controller', () => {
             }
             const original = await createFakeEncounter(model, originalParams)
             const updateParams: Encounter = {
+                _id: original._id,
                 title: `Title_${Math.random()}`,
                 description: `Desc_${Math.random()}`,
                 actions: [],
@@ -146,6 +147,7 @@ describe('encounter controller', () => {
         test('returns created encounter inside result', async () => {
             const id = new ObjectId().toString()
             const updateParams: Encounter = {
+                _id: id,
                 title: `Title_${Math.random()}`,
                 description: `Desc_${Math.random()}`,
                 actions: [],

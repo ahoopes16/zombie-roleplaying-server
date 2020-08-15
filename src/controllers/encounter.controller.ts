@@ -90,7 +90,7 @@ export class EncounterController extends Controller {
         @Body() requestBody: Encounter,
     ): Promise<SuccessResponseJSON<Encounter>> {
         this.setStatus(200)
-        return { result: await this.service.replaceEncounter(id, requestBody) }
+        return { result: await this.service.replaceOrCreateEncounter(id, requestBody) }
     }
 
     /**
@@ -105,6 +105,6 @@ export class EncounterController extends Controller {
     @Delete('{id}')
     public async deleteEncounter(@Path() id: string): Promise<SuccessResponseJSON<Encounter>> {
         this.setStatus(200)
-        return { result: await this.service.deleteEncounter(id) }
+        return { result: await this.service.removeEncounter(id) }
     }
 }

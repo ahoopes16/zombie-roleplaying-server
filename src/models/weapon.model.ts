@@ -7,6 +7,13 @@ import { Schema, Document, model, Model } from 'mongoose'
  */
 export interface Weapon {
     /**
+     * The Mongo ObjectID. Created automatically.
+     * @pattern ^[0-9a-fA-F]{24}$
+     * @example "5f2a4f071e51bd2ae06451ee"
+     */
+    _id: string
+
+    /**
      * The name of the weapon.
      * @example "Baseball Bat"
      */

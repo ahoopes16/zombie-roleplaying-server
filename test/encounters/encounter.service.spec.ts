@@ -196,7 +196,7 @@ describe('encounter service', () => {
         })
     })
 
-    describe('replaceEncounter', () => {
+    describe('replaceOrCreateEncounter', () => {
         test('happy path - updates encounter if Mongo ID exists', async () => {
             const encounterParams: EncounterCreationParams = {
                 title: `Title_${Math.random()}`,
@@ -205,6 +205,7 @@ describe('encounter service', () => {
             const original = await createFakeEncounter(model, encounterParams)
             const service = new EncounterService()
             const updateParams: Encounter = {
+                _id: original._id,
                 title: `Title_${Math.random()}`,
                 description: `Desc_${Math.random()}`,
                 actions: [],
@@ -214,7 +215,7 @@ describe('encounter service', () => {
                 __v: 2,
             }
 
-            const updated = await service.replaceEncounter(original._id, updateParams)
+            const updated = await service.replaceOrCreateEncounter(original._id, updateParams)
 
             expect(updated._id).toStrictEqual(original._id)
             expect(updated.title).toBe(updateParams.title)
@@ -227,6 +228,7 @@ describe('encounter service', () => {
             const service = new EncounterService()
             const id = new ObjectId().toString()
             const updateParams: Encounter = {
+                _id: id,
                 title: `Title_${Math.random()}`,
                 description: `Desc_${Math.random()}`,
                 actions: [],
@@ -236,7 +238,7 @@ describe('encounter service', () => {
                 __v: 2,
             }
 
-            const created = await service.replaceEncounter(id, updateParams)
+            const created = await service.replaceOrCreateEncounter(id, updateParams)
 
             expect(created._id.toString()).toBe(id)
             expect(created.title).toBe(updateParams.title)
@@ -249,6 +251,7 @@ describe('encounter service', () => {
             const invalidId = `invalid-id-${Math.random()}`
             const service = new EncounterService()
             const updateParams: Encounter = {
+                _id: invalidId,
                 title: `Title_${Math.random()}`,
                 description: `Desc_${Math.random()}`,
                 actions: [],
@@ -259,7 +262,7 @@ describe('encounter service', () => {
             }
             const expectedError = invalidMongoIDError(invalidId)
 
-            await expect(service.replaceEncounter(invalidId, updateParams)).rejects.toThrow(expectedError)
+            await expect(service.replaceOrCreateEncounter(invalidId, updateParams)).rejects.toThrow(expectedError)
         })
 
         test('throws a BadRequest error when given a title that already exists in the database', async () => {
@@ -269,6 +272,7 @@ describe('encounter service', () => {
             }
             const encounter = await createFakeEncounter(model, encounterParams)
             const updateParams: Encounter = {
+                _id: encounter._id,
                 title: encounter.title,
                 description: `Desc_${Math.random()}`,
                 actions: [],
@@ -281,11 +285,11 @@ describe('encounter service', () => {
 
             const service = new EncounterService()
 
-            await expect(service.replaceEncounter(encounter._id, updateParams)).rejects.toThrow(expectedError)
+            await expect(service.replaceOrCreateEncounter(encounter._id, updateParams)).rejects.toThrow(expectedError)
         })
     })
 
-    describe('deleteEncounter', () => {
+    describe('removeEncounter', () => {
         test('happy path - removes encounter from database', async () => {
             const service = new EncounterService()
             const encounterParams: EncounterCreationParams = {
@@ -294,7 +298,7 @@ describe('encounter service', () => {
             }
 
             const expected = await createFakeEncounter(model, encounterParams)
-            const actual = await service.deleteEncounter(expected._id)
+            const actual = await service.removeEncounter(expected._id)
             const afterRemoval = await model.findById(actual._id)
 
             expect(afterRemoval).toBeFalsy()
@@ -308,7 +312,7 @@ describe('encounter service', () => {
             }
             const expected = await createFakeEncounter(model, encounterParams)
 
-            const actual = await service.deleteEncounter(expected._id)
+            const actual = await service.removeEncounter(expected._id)
 
             expect(actual).toBeTruthy()
             expect(actual._id).toStrictEqual(expected._id)
@@ -321,7 +325,7 @@ describe('encounter service', () => {
             const service = new EncounterService()
             const expectedError = invalidMongoIDError(invalidId)
 
-            await expect(service.deleteEncounter(invalidId)).rejects.toThrow(expectedError)
+            await expect(service.removeEncounter(invalidId)).rejects.toThrow(expectedError)
         })
 
         test('throws a NotFound error when given a valid Mongo ID that does not exist', async () => {
@@ -329,7 +333,7 @@ describe('encounter service', () => {
             const expectedError = notFoundError(mongoId)
             const service = new EncounterService()
 
-            await expect(service.deleteEncounter(mongoId)).rejects.toThrow(expectedError)
+            await expect(service.removeEncounter(mongoId)).rejects.toThrow(expectedError)
         })
     })
 })

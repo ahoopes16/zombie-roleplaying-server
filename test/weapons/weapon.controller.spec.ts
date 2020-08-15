@@ -99,6 +99,11 @@ describe('weapon controller', () => {
         })
     })
 
+    describe('putWeapon', () => {
+        test.todo('returns updated weapon inside result')
+        test.todo('returns created weapon inside result')
+    })
+
     describe('deleteWeapon', () => {
         test('returns deleted weapon inside result', async () => {
             const controller = new WeaponController()
