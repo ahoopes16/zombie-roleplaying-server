@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Path, Post, Response, Route, SuccessResponse } from 'tsoa'
+import { Body, Controller, Delete, Get, Path, Post, Put, Response, Route, SuccessResponse } from 'tsoa'
 import { Weapon, WeaponCreationParams } from '../models/weapon.model'
 import { WeaponService } from '../services/weapon.service'
 import { SuccessResponseJSON, ErrorResponseJSON } from '../types/Response.type'
@@ -52,6 +52,25 @@ export class WeaponController extends Controller {
     public async postWeapon(@Body() requestBody: WeaponCreationParams): Promise<SuccessResponseJSON<Weapon>> {
         this.setStatus(201)
         return { result: await this.service.createWeapon(requestBody) }
+    }
+
+    /**
+     * Replace/Create a weapon.
+     * If the ID exists in the database, replace the document with the given weapon.
+     * If the ID does not exist but is valid, create the weapon with that ID.
+     * @param weaponId Mongo ObjectID of the desired weapon
+     * @param requestBody Fields and values to update on the weapon. Must be a complete Weapon document.
+     */
+    @SuccessResponse(200, 'Successfully Updated')
+    @Response<ErrorResponseJSON>(400, 'Validation Failed')
+    @Response<ErrorResponseJSON>(500, 'Internal Server Error')
+    @Put('{weaponId}')
+    public async putWeapon(
+        @Path() weaponId: string,
+        @Body() requestBody: Weapon,
+    ): Promise<SuccessResponseJSON<Weapon>> {
+        this.setStatus(200)
+        return { result: await this.service.replaceOrCreateWeapon(weaponId, requestBody) }
     }
 
     /**

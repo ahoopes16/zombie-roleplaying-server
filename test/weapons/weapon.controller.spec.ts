@@ -1,9 +1,10 @@
 import { WeaponController } from '../../src/controllers/weapon.controller'
-import WeaponModel, { WeaponCreationParams } from '../../src/models/weapon.model'
+import WeaponModel, { WeaponCreationParams, Weapon } from '../../src/models/weapon.model'
 import { createFakeWeapon } from '../helpers/weapon.helper'
 import DBConnector from '../../src/database'
 import env from '../../src/environment'
 import * as mongoose from 'mongoose'
+import { ObjectId } from 'mongodb'
 
 beforeAll(async () => {
     const url = new DBConnector().setDB(env.mongo.testDb).buildMongoURL()
@@ -100,8 +101,59 @@ describe('weapon controller', () => {
     })
 
     describe('putWeapon', () => {
-        test.todo('returns updated weapon inside result')
-        test.todo('returns created weapon inside result')
+        test('returns updated weapon inside result', async () => {
+            const originalParams: WeaponCreationParams = {
+                name: `Weapon_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 2,
+                attackDieSides: 10,
+            }
+            const original = await createFakeWeapon(model, originalParams)
+            const updateParams: Weapon = {
+                _id: original._id,
+                name: `Weapon_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 4,
+                attackDieSides: 10,
+                timesLooted: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                __v: 2,
+            }
+            const controller = new WeaponController()
+
+            const updated = await controller.putWeapon(original._id, updateParams)
+
+            expect(updated.result).toBeDefined()
+            expect(updated.result._id).toStrictEqual(original._id)
+            expect(updated.result.name).toBe(updateParams.name)
+            expect(updated.result.name).not.toBe(original.name)
+            expect(updated.result.description).toBe(updateParams.description)
+            expect(updated.result.description).not.toBe(original.description)
+        })
+
+        test('returns created weapon inside result', async () => {
+            const _id = new ObjectId().toString()
+            const updateParams: Weapon = {
+                _id,
+                name: `Weapon_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 4,
+                attackDieSides: 10,
+                timesLooted: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                __v: 2,
+            }
+            const controller = new WeaponController()
+
+            const updated = await controller.putWeapon(_id, updateParams)
+
+            expect(updated.result).toBeDefined()
+            expect(updated.result._id.toString()).toBe(_id)
+            expect(updated.result.name).toBe(updateParams.name)
+            expect(updated.result.description).toBe(updateParams.description)
+        })
     })
 
     describe('deleteWeapon', () => {
