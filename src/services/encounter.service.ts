@@ -31,7 +31,7 @@ export class EncounterService {
     ): Promise<Encounter & Document> {
         validateMongoID(_id)
         const encounter = await validateIdExistsInModel(_id, this.model)
-        await this.validateTitleDoesNotExist(encounterParams)
+        await this.validateTitleDoesNotExist(encounterParams, _id)
 
         encounter.set(encounterParams)
         return encounter.save()
@@ -39,7 +39,7 @@ export class EncounterService {
 
     public async replaceOrCreateEncounter(_id: string, newEncounter: Encounter): Promise<Encounter & Document> {
         validateMongoID(_id)
-        await this.validateTitleDoesNotExist(newEncounter)
+        await this.validateTitleDoesNotExist(newEncounter, _id)
 
         return this.model.findOneAndUpdate({ _id }, newEncounter, {
             upsert: true,
@@ -56,6 +56,7 @@ export class EncounterService {
 
     private async validateTitleDoesNotExist(
         params: EncounterCreationParams | EncounterPatchParams | Encounter,
+        excludeId = '',
     ): Promise<void> {
         const { title } = params
 
@@ -63,7 +64,7 @@ export class EncounterService {
             return
         }
 
-        const encounterAlreadyExists = Boolean(await this.model.findOne({ title }).exec())
+        const encounterAlreadyExists = Boolean(await this.model.findOne({ title, _id: { $ne: excludeId } }).exec())
         if (encounterAlreadyExists) {
             throw Boom.badRequest(`An encounter with the title "${title}" already exists.`)
         }

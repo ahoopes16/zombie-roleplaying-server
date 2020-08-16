@@ -27,7 +27,7 @@ export class WeaponService {
 
     public async replaceOrCreateWeapon(_id: string, newWeapon: Weapon): Promise<Weapon & Document> {
         validateMongoID(_id)
-        await this.validateNameDoesNotExist(newWeapon)
+        await this.validateNameDoesNotExist(newWeapon, _id)
 
         return this.model.findOneAndUpdate({ _id }, newWeapon, {
             upsert: true,
@@ -42,14 +42,14 @@ export class WeaponService {
         return this.model.findByIdAndRemove(id)
     }
 
-    private async validateNameDoesNotExist(params: WeaponCreationParams | Weapon): Promise<void> {
+    private async validateNameDoesNotExist(params: WeaponCreationParams | Weapon, excludeId = ''): Promise<void> {
         const { name } = params
 
         if (!name) {
             return
         }
 
-        const weaponAlreadyExists = Boolean(await this.model.findOne({ name }).exec())
+        const weaponAlreadyExists = Boolean(await this.model.findOne({ name, _id: { $ne: excludeId } }).exec())
         if (weaponAlreadyExists) {
             throw Boom.badRequest(`A weapon with the name "${name}" already exists.`)
         }
