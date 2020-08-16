@@ -32,10 +32,10 @@ export class EncounterController extends Controller {
     @Response<ErrorResponseJSON>(400, 'Validation Failed')
     @Response<ErrorResponseJSON>(404, 'Encounter Not Found')
     @Response<ErrorResponseJSON>(500, 'Internal Server Error')
-    @Get('{id}')
-    public async getEncounter(@Path() id: string): Promise<SuccessResponseJSON<Encounter>> {
+    @Get('{encounterId}')
+    public async getEncounter(@Path() encounterId: string): Promise<SuccessResponseJSON<Encounter>> {
         this.setStatus(200)
-        return { result: await this.service.inspectEncounter(id) }
+        return { result: await this.service.inspectEncounter(encounterId) }
     }
 
     /**
@@ -65,13 +65,13 @@ export class EncounterController extends Controller {
     @Response<ErrorResponseJSON>(400, 'Validation Failed')
     @Response<ErrorResponseJSON>(404, 'Encounter Not Found')
     @Response<ErrorResponseJSON>(500, 'Internal Server Error')
-    @Patch('{id}')
+    @Patch('{encounterId}')
     public async patchEncounter(
-        @Path() id: string,
+        @Path() encounterId: string,
         @Body() requestBody: EncounterPatchParams,
     ): Promise<SuccessResponseJSON<Encounter>> {
         this.setStatus(200)
-        return { result: await this.service.partiallyUpdateEncounter(id, requestBody) }
+        return { result: await this.service.partiallyUpdateEncounter(encounterId, requestBody) }
     }
 
     /**
@@ -79,18 +79,18 @@ export class EncounterController extends Controller {
      * If the ID exists in the database, replace it with the given encounter.
      * If the ID does not exist but is valid, create it.
      * @param id Mongo ObjectID of the desired encounter
-     * @param requestBody Fields and values to update on the encounter. Must be a complete encounter record.
+     * @param requestBody Fields and values to update on the encounter. Must be a complete encounter document.
      */
     @SuccessResponse(200, 'Successfully Updated')
     @Response<ErrorResponseJSON>(400, 'Validation Failed')
     @Response<ErrorResponseJSON>(500, 'Internal Server Error')
-    @Put('{id}')
+    @Put('{encounterId}')
     public async putEncounter(
-        @Path() id: string,
+        @Path() encounterId: string,
         @Body() requestBody: Encounter,
     ): Promise<SuccessResponseJSON<Encounter>> {
         this.setStatus(200)
-        return { result: await this.service.replaceOrCreateEncounter(id, requestBody) }
+        return { result: await this.service.replaceOrCreateEncounter(encounterId, requestBody) }
     }
 
     /**
@@ -102,9 +102,9 @@ export class EncounterController extends Controller {
     @Response<ErrorResponseJSON>(400, 'Validation Failed')
     @Response<ErrorResponseJSON>(404, 'Encounter Not Found')
     @Response<ErrorResponseJSON>(500, 'Internal Server Error')
-    @Delete('{id}')
-    public async deleteEncounter(@Path() id: string): Promise<SuccessResponseJSON<Encounter>> {
+    @Delete('{encounterId}')
+    public async deleteEncounter(@Path() encounterId: string): Promise<SuccessResponseJSON<Encounter>> {
         this.setStatus(200)
-        return { result: await this.service.removeEncounter(id) }
+        return { result: await this.service.removeEncounter(encounterId) }
     }
 }
