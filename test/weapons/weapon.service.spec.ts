@@ -220,6 +220,13 @@ describe('weapon service', () => {
 
         test('throws a BadRequest error when given a name that already exists', async () => {
             const service = new WeaponService()
+            const otherWeaponParams: WeaponCreationParams = {
+                name: `Weapon_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+                attackDieCount: 2,
+                attackDieSides: 8,
+            }
+            await createFakeWeapon(model, otherWeaponParams)
             const weaponParams: WeaponCreationParams = {
                 name: `Weapon_${Math.random()}`,
                 description: `Description_${Math.random()}`,
@@ -230,7 +237,7 @@ describe('weapon service', () => {
 
             const updateParams: Weapon = {
                 _id: weapon._id,
-                name: weapon.name,
+                name: otherWeaponParams.name,
                 description: `Description_${Math.random()}`,
                 attackDieCount: 4,
                 attackDieSides: 10,
@@ -239,7 +246,7 @@ describe('weapon service', () => {
                 updatedAt: new Date(),
                 __v: 2,
             }
-            const expectedError = nameExistsError(weapon.name)
+            const expectedError = nameExistsError(otherWeaponParams.name)
 
             await expect(service.replaceOrCreateWeapon(weapon._id, updateParams)).rejects.toThrow(expectedError)
         })

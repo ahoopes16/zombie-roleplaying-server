@@ -64,7 +64,8 @@ export class EncounterService {
             return
         }
 
-        const encounterAlreadyExists = Boolean(await this.model.findOne({ title, _id: { $ne: excludeId } }).exec())
+        const query = excludeId ? { title, _id: { $ne: excludeId } } : { title }
+        const encounterAlreadyExists = Boolean(await this.model.findOne(query).exec())
         if (encounterAlreadyExists) {
             throw Boom.badRequest(`An encounter with the title "${title}" already exists.`)
         }

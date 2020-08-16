@@ -49,7 +49,8 @@ export class WeaponService {
             return
         }
 
-        const weaponAlreadyExists = Boolean(await this.model.findOne({ name, _id: { $ne: excludeId } }).exec())
+        const query = excludeId ? { name, _id: { $ne: excludeId } } : { name }
+        const weaponAlreadyExists = Boolean(await this.model.findOne(query).exec())
         if (weaponAlreadyExists) {
             throw Boom.badRequest(`A weapon with the name "${name}" already exists.`)
         }

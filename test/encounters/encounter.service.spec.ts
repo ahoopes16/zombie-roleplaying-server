@@ -266,6 +266,12 @@ describe('encounter service', () => {
         })
 
         test('throws a BadRequest error when given a title that already exists in the database', async () => {
+            const otherEncounterParams: EncounterCreationParams = {
+                title: `Title_${Math.random()}`,
+                description: `Description_${Math.random()}`,
+            }
+            await createFakeEncounter(model, otherEncounterParams)
+
             const encounterParams: EncounterCreationParams = {
                 title: `Title_${Math.random()}`,
                 description: `Description_${Math.random()}`,
@@ -273,7 +279,7 @@ describe('encounter service', () => {
             const encounter = await createFakeEncounter(model, encounterParams)
             const updateParams: Encounter = {
                 _id: encounter._id,
-                title: encounter.title,
+                title: otherEncounterParams.title,
                 description: `Desc_${Math.random()}`,
                 actions: [],
                 numberOfRuns: 1,
@@ -281,7 +287,7 @@ describe('encounter service', () => {
                 updatedAt: new Date(),
                 __v: 2,
             }
-            const expectedError = titleExistsError(encounterParams.title)
+            const expectedError = titleExistsError(otherEncounterParams.title)
 
             const service = new EncounterService()
 
